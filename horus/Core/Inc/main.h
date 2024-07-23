@@ -57,6 +57,26 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Tamper_Pin GPIO_PIN_13
+#define Tamper_GPIO_Port GPIOC
+#define LSEin_Pin GPIO_PIN_14
+#define LSEin_GPIO_Port GPIOC
+#define LSEout_Pin GPIO_PIN_15
+#define LSEout_GPIO_Port GPIOC
+#define HSEin_Pin GPIO_PIN_0
+#define HSEin_GPIO_Port GPIOH
+#define HSEout_Pin GPIO_PIN_1
+#define HSEout_GPIO_Port GPIOH
+#define Boot1_Pin GPIO_PIN_2
+#define Boot1_GPIO_Port GPIOB
+#define MCO_Pin GPIO_PIN_8
+#define MCO_GPIO_Port GPIOA
+#define SWDio_Pin GPIO_PIN_13
+#define SWDio_GPIO_Port GPIOA
+#define SWCk_Pin GPIO_PIN_14
+#define SWCk_GPIO_Port GPIOA
+#define SWO_Pin GPIO_PIN_3
+#define SWO_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
