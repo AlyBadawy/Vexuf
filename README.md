@@ -26,7 +26,7 @@ The "Horus" device is designed to support both Emergency Operations Centers (EOC
 
 Horus provides detailed insights into power supply statuses and environmental conditions, ensuring operational continuity and situational awareness. Additionally, the device logs data to an SD card for future retrieval and analysis. The VexUF:Horus supports communication with a computer or a stand-alone TNC, utilizing the APRS protocol to transmit vital information to remote locations. This ensures better coordination and response during emergencies and day-to-day operations for amateur radio enthusiasts.
 
-You can find the firmware and detailed documentation for the Horus device in the [Horus folder](./Horus).
+You can find the firmware and detailed documentation for the Horus device in the [Horus folder](./horus).
 
 ### Seth
 
@@ -34,7 +34,7 @@ You can find the firmware and detailed documentation for the Horus device in the
 
 The "Seth" device was used as a sensor board to communicate with a Raspberry Pi computer directly to give sensor readings via the serial port. It was built on a custom Arduino-based board. 
 
-You can find the deprecated firmware and documentation for the Seth device in the [Seth folder](./Seth).
+You can find the deprecated firmware and documentation for the Seth device in the [Seth folder](./seth).
 
 ## Contributing
 
@@ -53,4 +53,4 @@ This repository is licensed under the [Attribution-NonCommercial 4.0 Internation
 
 ## Bug Reports and Feature Requests
 
-If you encounter any bugs or have feature requests, please add them to the [issues section](https://github.com/yourusername/VexUF-Firmwares/issues) of this repository. We appreciate your feedback and will do our best to address issues promptly.
+If you encounter any bugs or have feature requests, please add them to the [issues section](https://github.com/alybadawy/VexUF-Firmwares/issues) of this repository. We appreciate your feedback and will do our best to address issues promptly.
