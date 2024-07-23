@@ -25,6 +25,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "actuators.h"
+
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,6 +59,13 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+// This is used by printf(). We are redirecting that to ITM for debugging.
+int _write(int file, char *ptr, int len) {
+	for (int i=0; i < len; i++) {
+		ITM_SendChar(*ptr++);
+	}
+	return len;
+}
 /* USER CODE END 0 */
 
 /**
@@ -101,6 +110,10 @@ int main(void)
 
   }
   Actuators_Lights(GPIO_PIN_RESET);
+
+
+  // printf test
+  printf("Hello from VexUF\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
