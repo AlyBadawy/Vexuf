@@ -69,6 +69,14 @@ void Error_Handler(void);
 #define HSEout_GPIO_Port GPIOH
 #define Boot1_Pin GPIO_PIN_2
 #define Boot1_GPIO_Port GPIOB
+#define ActDa_Pin GPIO_PIN_12
+#define ActDa_GPIO_Port GPIOB
+#define ActLa_Pin GPIO_PIN_13
+#define ActLa_GPIO_Port GPIOB
+#define ActCk_Pin GPIO_PIN_14
+#define ActCk_GPIO_Port GPIOB
+#define ActLd_Pin GPIO_PIN_15
+#define ActLd_GPIO_Port GPIOB
 #define MCO_Pin GPIO_PIN_8
 #define MCO_GPIO_Port GPIOA
 #define SWDio_Pin GPIO_PIN_13

@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "actuators.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,6 +92,16 @@ int main(void)
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
 
+  // Actuators test
+  Actuators_Lights(GPIO_PIN_SET);
+  for(ActuatorPin pin = ACT_PIN_A1; pin <= ACT_PIN_A8; pin++) {
+	Actuators_SetPin(pin);
+	HAL_Delay(100);
+	Actuators_ResetPin(pin);
+	HAL_Delay(100);
+
+  }
+  Actuators_Lights(GPIO_PIN_RESET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -247,11 +257,21 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, ActDa_Pin|ActLa_Pin|ActCk_Pin|ActLd_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : Boot1_Pin */
   GPIO_InitStruct.Pin = Boot1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(Boot1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : ActDa_Pin ActLa_Pin ActCk_Pin ActLd_Pin */
+  GPIO_InitStruct.Pin = ActDa_Pin|ActLa_Pin|ActCk_Pin|ActLd_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : MCO_Pin */
   GPIO_InitStruct.Pin = MCO_Pin;
