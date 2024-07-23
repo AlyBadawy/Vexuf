@@ -50,3 +50,17 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Eclipse
+.metadata
+.settings
+*.launch
+
+# OS 
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build directories
+[Rr]elease/
+[Dd]ebug/
