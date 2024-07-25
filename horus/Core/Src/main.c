@@ -28,7 +28,9 @@
 /* USER CODE BEGIN Includes */
 #include "actuators.h"
 
+
 #include "stdio.h"
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,13 +60,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint32_t adcValues[5];	// buffer to store the AVs values from ADC, an array of 5 values
-//  adcValues[0]  		<< value for VREFINT to calibrate VREF
-//  adcValues[1]  		<< value for Internal temperature (CPU)
-//  adcValues[2]  		<< value for AV1
-//  adcValues[3]  		<< value for Av2
-//  adcValues[4]  		<< value for Av3
 
+static const char custom_base32_alphabet[] = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+char serial_number[24]; // Enough space for "xxxxxx-xxxxxx-xxxxxx\0"
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,6 +108,70 @@ float adcToAv(uint32_t vrefValue, uint32_t adcValue) {
 	return voltage;
 }
 
+void base32_encode(const uint8_t *data, size_t length, char *output) {
+    int index, bitbuffer, bits_in_buffer;
+    size_t i;
+    const uint8_t *current_byte;
+
+    index = 0;
+    bitbuffer = 0;
+    bits_in_buffer = 0;
+    current_byte = data;
+
+    for (i = 0; i < length; i++) {
+        bitbuffer = (bitbuffer << 8) | *current_byte++;
+        bits_in_buffer += 8;
+
+        while (bits_in_buffer >= 5) {
+            output[index++] = custom_base32_alphabet[(bitbuffer >> (bits_in_buffer - 5)) & 0x1F];
+            bits_in_buffer -= 5;
+        }
+    }
+
+    if (bits_in_buffer > 0) {
+        output[index++] = custom_base32_alphabet[(bitbuffer << (5 - bits_in_buffer)) & 0x1F];
+    }
+
+    output[index] = '\0';
+}
+
+
+void get_device_id(uint32_t uid[3]) {
+    uid[2] = HAL_GetUIDw0();
+    uid[1] = HAL_GetUIDw1();
+    uid[0] = HAL_GetUIDw2();
+}
+
+void convert_uid_to_bytes(uint32_t uid[3], uint8_t bytes[12]) {
+    for (int i = 0; i < 3; i++) {
+        bytes[4*i] = (uid[i] >> 24) & 0xFF;
+        bytes[4*i + 1] = (uid[i] >> 16) & 0xFF;
+        bytes[4*i + 2] = (uid[i] >> 8) & 0xFF;
+        bytes[4*i + 3] = uid[i] & 0xFF;
+    }
+}
+
+
+void generate_serial_number(char *serial_number) {
+    uint32_t uid[3];
+    uint8_t uid_bytes[12];
+
+    get_device_id(uid);
+    convert_uid_to_bytes(uid, uid_bytes);
+    base32_encode(uid_bytes, 12, serial_number);
+}
+
+void format_serial_number_with_dashes(const char *input, char *output) {
+    int i, j;
+    int length = strlen(input);
+    for (i = 0, j = 0; i < length; i++) {
+        if (i > 0 && i % 4 == 0) {
+            output[j++] = '-';
+        }
+        output[j++] = input[i];
+    }
+    output[j] = '\0';
+}
 
 
 /* USER CODE END 0 */
@@ -122,6 +184,16 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+	uint32_t adcValues[5];	// buffer to store the AVs values from ADC, an array of 5 values
+	//  adcValues[0]  		<< value for VREFINT to calibrate VREF
+	//  adcValues[1]  		<< value for Internal temperature (CPU)
+	//  adcValues[2]  		<< value for AV1
+	//  adcValues[3]  		<< value for Av2
+	//  adcValues[4]  		<< value for Av3
+
+
+
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -164,6 +236,7 @@ int main(void)
 
   // ADCs test
   HAL_ADC_Start_DMA(&hadc1, adcValues, 5);
+  HAL_Delay(50);
 
   uint32_t vrefValue = adcValues[0];
   float vrefValueFloat = adcValues[0];
@@ -184,6 +257,17 @@ int main(void)
   HAL_ADC_Stop_DMA(&hadc1);
 
   HAL_Delay(1000);
+
+  // Test Serial Number
+  char serial_number[20];
+  char formatted_serial_number[25]; // Enough space for dashes
+  generate_serial_number(serial_number);
+  printf("Serial Number: %s\r\n", serial_number);
+
+  format_serial_number_with_dashes(serial_number, formatted_serial_number);
+
+  printf("Serial Number: %s\n", formatted_serial_number);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
