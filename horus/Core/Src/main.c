@@ -29,9 +29,8 @@
 /* USER CODE BEGIN Includes */
 #include "actuators.h"
 #include "i2c_Checker.h"
+#include "i2c_aht20.h"
 
-#include "stdio.h"
-#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -234,7 +233,16 @@ int main(void)
 
 
   // printf test
-  printf("Hello from VexUF\r\n");
+  printf("===================================================\r\n\r\n");
+  printf("   VexUF:Horus\r\n\r\n");
+
+  char serial_number[20];
+  char formatted_serial_number[25]; // Enough space for dashes
+  generate_serial_number(serial_number);
+  format_serial_number_with_dashes(serial_number, formatted_serial_number);
+
+  printf("   Serial Number: %s\r\n\r\n", formatted_serial_number);
+  printf("===================================================\r\n");
 
   // ADCs test
   HAL_ADC_Start_DMA(&hadc1, adcValues, 5);
@@ -242,37 +250,51 @@ int main(void)
 
   uint32_t vrefValue = adcValues[0];
   float vrefValueFloat = adcValues[0];
-  printf("value of VREF: %f which is %0.3fV\r\n", vrefValueFloat, getVref(vrefValue));
-
+  printf("\r\n");
+  printf("Testing ADC functionality...\r\n");
+  printf("  VREF: %f - %0.3fV\r\n", vrefValueFloat, getVref(vrefValue));
   float tempratureValue = adcValues[1];
   float cpuTempC = getCpuTempC(vrefValue, tempratureValue);
-  float cpuTempF = cToF(cpuTempC);
-  printf("value of temperature: %f, which is %0.3fC, and %0.3fF\r\n", tempratureValue, cpuTempC, cpuTempF);
-
+  printf("  Temperature CPU Raw: %0.2f\r\n", tempratureValue);
+  printf("  Temperature CPU C: %0.2f\r\n", cpuTempC);
+  printf("  Temperature CPU F: %0.2f\r\n", cToF(cpuTempC));
   float av1 = adcValues[2];
   float av2 = adcValues[3];
   float av3 = adcValues[4];
-  printf("value of av1: %f, which is %0.3fV\r\n", av1, adcToAv(vrefValue, av1));
-  printf("value of av2: %f, which is %0.3fV\r\n" ,av2, adcToAv(vrefValue, av2));
-  printf("value of av3: %f, which is %0.3fV\r\n", av3, adcToAv(vrefValue, av3));
+  printf("  Av1: %f - %0.3fV\r\n", av1, adcToAv(vrefValue, av1));
+  printf("  Av2: %f - %0.3fV\r\n" ,av2, adcToAv(vrefValue, av2));
+  printf("  Av3: %f - %0.3fV\r\n", av3, adcToAv(vrefValue, av3));
 
   HAL_ADC_Stop_DMA(&hadc1);
 
-  HAL_Delay(1000);
-
-  // Test Serial Number
-  char serial_number[20];
-  char formatted_serial_number[25]; // Enough space for dashes
-  generate_serial_number(serial_number);
-  printf("Serial Number: %s\r\n", serial_number);
-
-  format_serial_number_with_dashes(serial_number, formatted_serial_number);
-
-  printf("Serial Number: %s\n", formatted_serial_number);
 
 
   // Test I2c
+  printf("\r\n\r\n");
   I2C_Scan(&hi2c1);
+
+
+  // Internal temp. Test
+  printf("\r\n\r\n");
+  // Initialize the AHT20 sensor
+  if (AHT20_Init(&hi2c1) != HAL_OK) {
+	  Error_Handler();
+  }
+
+  float temperature = 0.0f;
+  float humidity = 0.0f;
+	// Read temperature and humidity from AHT20
+  printf("Internal AHT20 sensor:\r\n");
+  if (AHT20_ReadTemperatureHumidity(&hi2c1, &temperature, &humidity) == HAL_OK) {
+	  printf("  Temperature Internal C: %0.2f\r\n", temperature);
+	  printf("  Temperature Internal F: %0.2f\r\n", cToF(temperature));
+	  printf("  Humidity Internal %%: %0.2f\r\n", humidity);
+  } else {
+	  printf("  Error reading from AHT20\n");
+  }
+
+
+
 
   /* USER CODE END 2 */
 
