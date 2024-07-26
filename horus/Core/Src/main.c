@@ -21,13 +21,14 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "i2c.h"
 #include "rtc.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "actuators.h"
-
+#include "i2c_Checker.h"
 
 #include "stdio.h"
 #include <string.h>
@@ -217,6 +218,7 @@ int main(void)
   MX_DMA_Init();
   MX_RTC_Init();
   MX_ADC1_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
   // Actuators test
@@ -267,6 +269,10 @@ int main(void)
   format_serial_number_with_dashes(serial_number, formatted_serial_number);
 
   printf("Serial Number: %s\n", formatted_serial_number);
+
+
+  // Test I2c
+  I2C_Scan(&hi2c1);
 
   /* USER CODE END 2 */
 
