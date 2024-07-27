@@ -21,8 +21,11 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "fatfs.h"
 #include "i2c.h"
 #include "rtc.h"
+#include "sdio.h"
+#include "spi.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -30,6 +33,7 @@
 #include "actuators.h"
 #include "i2c_Checker.h"
 #include "i2c_aht20.h"
+#include "93CXX.h"
 
 /* USER CODE END Includes */
 
@@ -165,7 +169,7 @@ void format_serial_number_with_dashes(const char *input, char *output) {
     int i, j;
     int length = strlen(input);
     for (i = 0, j = 0; i < length; i++) {
-        if (i > 0 && i % 4 == 0) {
+        if (i > 0 && i % 5 == 0) {
             output[j++] = '-';
         }
         output[j++] = input[i];
@@ -218,6 +222,9 @@ int main(void)
   MX_RTC_Init();
   MX_ADC1_Init();
   MX_I2C1_Init();
+  MX_SDIO_SD_Init();
+  MX_FATFS_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
   // Actuators test
@@ -261,21 +268,24 @@ int main(void)
   float av1 = adcValues[2];
   float av2 = adcValues[3];
   float av3 = adcValues[4];
-  printf("  Av1: %f - %0.3fV\r\n", av1, adcToAv(vrefValue, av1));
-  printf("  Av2: %f - %0.3fV\r\n" ,av2, adcToAv(vrefValue, av2));
-  printf("  Av3: %f - %0.3fV\r\n", av3, adcToAv(vrefValue, av3));
+  printf("  Av1 Raw: %f\r\n", av1);
+  printf("  Av1 Volt: %0.3fV\r\n", adcToAv(vrefValue, av1));
+  printf("  Av2 Raw: %f\r\n", av2);
+  printf("  Av2 Volt: %0.3fV\r\n", adcToAv(vrefValue, av2));
+  printf("  Av3 Raw: %f\r\n", av3);
+  printf("  Av3 Volt: %0.3fV\r\n", adcToAv(vrefValue, av3));
 
   HAL_ADC_Stop_DMA(&hadc1);
 
 
 
   // Test I2c
-  printf("\r\n\r\n");
+  printf("\r\n");
   I2C_Scan(&hi2c1);
 
 
   // Internal temp. Test
-  printf("\r\n\r\n");
+  printf("\r\n");
   // Initialize the AHT20 sensor
   if (AHT20_Init(&hi2c1) != HAL_OK) {
 	  Error_Handler();
@@ -293,7 +303,184 @@ int main(void)
 	  printf("  Error reading from AHT20\n");
   }
 
+  	printf("\r\n");
+  	printf("Testing SD Card Functionalities...\r\n");
 
+    char TxBuffer[250];
+  	FATFS FatFs;
+    FIL Fil;
+    FRESULT FR_Status;
+    FATFS *FS_Ptr;
+    UINT RWC, WWC; // Read/Write Word Counter
+    DWORD FreeClusters;
+    uint32_t TotalSize, FreeSpace;
+    char RW_Buffer[200];
+    do
+    {
+      //------------------[ Mount The SD Card ]--------------------
+      FR_Status = f_mount(&FatFs, SDPath, 1);
+      if (FR_Status != FR_OK)
+      {
+        sprintf(TxBuffer, "  Error! While Mounting SD Card, Error Code: (%i)\r\n", FR_Status);
+        printf(TxBuffer);
+        break;
+      }
+      sprintf(TxBuffer, "  SD Card Mounted Successfully! \r\n");
+      printf(TxBuffer);
+      //------------------[ Get & Print The SD Card Size & Free Space ]--------------------
+      f_getfree("", &FreeClusters, &FS_Ptr);
+      TotalSize = (uint32_t)((FS_Ptr->n_fatent - 2) * FS_Ptr->csize * 0.5);
+      FreeSpace = (uint32_t)(FreeClusters * FS_Ptr->csize * 0.5);
+      sprintf(TxBuffer, "  Total SD Card Size: %lu Bytes\r\n", TotalSize);
+      printf(TxBuffer);
+      sprintf(TxBuffer, "  Free SD Card Space: %lu Bytes\r\n", FreeSpace);
+      printf(TxBuffer);
+      //------------------[ Open A Text File For Write & Write Data ]--------------------
+      //Open the file
+      FR_Status = f_open(&Fil, "MyTextFile.txt", FA_WRITE | FA_READ | FA_CREATE_ALWAYS);
+      if(FR_Status != FR_OK)
+      {
+        sprintf(TxBuffer, "  Error! While Creating/Opening A New Text File, Error Code: (%i)\r\n", FR_Status);
+        printf(TxBuffer);
+        break;
+      }
+      sprintf(TxBuffer, "  Text File Created & Opened! Writing Data To The Text File..\r\n");
+      printf(TxBuffer);
+      // (1) Write Data To The Text File [ Using f_puts() Function ]
+      f_puts("Hello! From STM32 To SD Card Over SDIO, Using f_puts()\n", &Fil);
+      // (2) Write Data To The Text File [ Using f_write() Function ]
+      strcpy(RW_Buffer, "Hello! From STM32 To SD Card Over SDIO, Using f_write().\r\n");
+      f_write(&Fil, RW_Buffer, strlen(RW_Buffer), &WWC);
+      // Close The File
+      f_close(&Fil);
+      //------------------[ Open A Text File For Read & Read Its Data ]--------------------
+      // Open The File
+      FR_Status = f_open(&Fil, "MyTextFile.txt", FA_READ);
+      if(FR_Status != FR_OK)
+      {
+        sprintf(TxBuffer, "  Error! While Opening (MyTextFile.txt) File For Read.. \r\n");
+        printf(TxBuffer);
+        break;
+      }
+      // (1) Read The Text File's Data [ Using f_gets() Function ]
+      f_gets(RW_Buffer, sizeof(RW_Buffer), &Fil);
+      sprintf(TxBuffer, "  Data Read From (MyTextFile.txt) Using f_gets().\r\n");
+      printf(TxBuffer);
+      // (2) Read The Text File's Data [ Using f_read() Function ]
+      f_read(&Fil, RW_Buffer, f_size(&Fil), &RWC);
+      sprintf(TxBuffer, "  Data Read From (MyTextFile.txt) Using f_read().\r\n");
+      printf(TxBuffer);
+      // Close The File
+      f_close(&Fil);
+      sprintf(TxBuffer, "  File Closed! \r\n");
+      printf(TxBuffer);
+      //------------------[ Open An Existing Text File, Update Its Content, Read It Back ]--------------------
+      // (1) Open The Existing File For Write (Update)
+      FR_Status = f_open(&Fil, "MyTextFile.txt", FA_OPEN_EXISTING | FA_WRITE);
+      FR_Status = f_lseek(&Fil, f_size(&Fil)); // Move The File Pointer To The EOF (End-Of-File)
+      if(FR_Status != FR_OK)
+      {
+        sprintf(TxBuffer, "  Error! While Opening (MyTextFile.txt) File For Update.. \r\n");
+        printf(TxBuffer);
+        break;
+      }
+      // (2) Write New Line of Text Data To The File
+      FR_Status = f_puts("  This New Line Was Added During File Update!\r\n", &Fil);
+      f_close(&Fil);
+      memset(RW_Buffer,'\0',sizeof(RW_Buffer)); // Clear The Buffer
+      // (3) Read The Contents of The Text File After The Update
+      FR_Status = f_open(&Fil, "MyTextFile.txt", FA_READ); // Open The File For Read
+      f_read(&Fil, RW_Buffer, f_size(&Fil), &RWC);
+      sprintf(TxBuffer, "  Data Read From (MyTextFile.txt) After Update.\r\n");
+      printf(TxBuffer);
+      f_close(&Fil);
+      //------------------[ Delete The Text File ]--------------------
+      // Delete The File
+      /*
+      FR_Status = f_unlink(MyTextFile.txt);
+      if (FR_Status != FR_OK){
+          sprintf(TxBuffer, "Error! While Deleting The (MyTextFile.txt) File.. \r\n");
+          USC_CDC_Print(TxBuffer);
+      }
+      */
+    } while(0);
+    //------------------[ Test Complete! Unmount The SD Card ]--------------------
+    FR_Status = f_mount(NULL, "", 0);
+    if (FR_Status != FR_OK)
+    {
+        sprintf(TxBuffer, "  Error! While Un-mounting SD Card, Error Code: (%i)\r\n", FR_Status);
+        printf(TxBuffer);
+    } else{
+        sprintf(TxBuffer, "  SD Card Un-mounted Successfully! \r\n");
+        printf(TxBuffer);
+    }
+
+  // EEPROM READ TEST
+    // Example usage
+	uint16_t data = EEPROM_Read(0xFFEE);
+	EEPROM_Write(0xFFEE, 0xABCD);
+	data = EEPROM_Read(0xFFEE);
+	printf("EEprom says: %i\r\n", data);
+
+
+
+	uint16_t buffer[128];
+	for (uint16_t address = 0; address < 128; address++) {
+		buffer[address] = EEPROM_Read(address);
+	}
+    for (uint16_t address = 0; address < 128; address += 16) {
+    	printf("%10X: ", address);
+        // Print first column (8 words)
+        for (uint16_t i = 0; i < 8; i++) {
+            printf("%04X ", buffer[address + i]);
+        }
+
+        // Print separator
+        printf("    ");
+
+        // Print second column (8 words)
+        for (uint16_t i = 8; i < 16; i++) {
+            printf("%04X ", buffer[address + i]);
+        }
+
+        // New line
+        printf("\r\n");
+
+
+
+    }
+
+    char writeData[25] = "Hello, EEPROM! Testing";
+        char readData[25];
+        uint16_t writeBuffer[13]; // 25 characters will be stored in 13 words (16-bit each)
+        uint16_t readBuffer[13];
+
+        // Convert char array to uint16_t array
+        for (int i = 0; i < 12; i++) {
+            writeBuffer[i] = (writeData[2 * i] << 8) | writeData[2 * i + 1];
+        }
+        // Handle the last character (if array size is odd)
+        writeBuffer[12] = writeData[24];
+
+        // Write to EEPROM
+        EEPROM_WriteMultipleWords(0x0000, writeBuffer, 13);
+
+        // Read from EEPROM
+        EEPROM_ReadMultipleWords(0x0000, readBuffer, 13);
+
+        // Convert uint16_t array back to char array
+        for (int i = 0; i < 12; i++) {
+            readData[2 * i] = (readBuffer[i] >> 8) & 0xFF;
+            readData[2 * i + 1] = readBuffer[i] & 0xFF;
+        }
+        // Handle the last character (if array size is odd)
+        readData[24] = readBuffer[12] & 0xFF;
+
+        // Null-terminate the readData string
+        readData[25] = '\0';
+
+        // Print the read data
+        printf("Read Data: %s\r\n", readData);
 
 
   /* USER CODE END 2 */
