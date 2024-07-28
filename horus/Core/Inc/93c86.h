@@ -48,4 +48,6 @@ uint16_t EEPROM_Read(uint16_t address);
 void EEPROM_ReadMultipleWords(uint16_t startAddress, uint16_t* buffer, uint16_t length);
 void EEPROM_WriteMultipleWords(uint16_t startAddress, uint16_t* buffer, uint16_t length);
 
+void EEPROM_Test(void);
+
 #endif /* INC_93C86_H_ */

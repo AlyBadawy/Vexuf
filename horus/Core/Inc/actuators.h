@@ -29,6 +29,7 @@ void Actuators_SetPin(ActuatorPin pin);
 void Actuators_ResetPin(ActuatorPin pin);
 void Actuators_Update(void);
 void Actuators_Lights(GPIO_PinState state);
+void Actuators_Test(void);
 
 #endif /* INC_ACTUATORS_H_ */
 

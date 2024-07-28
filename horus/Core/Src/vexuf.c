@@ -8,6 +8,8 @@
 
 #include "vexuf.h"
 
+extern I2C_HandleTypeDef hi2c1;
+
 static const char custom_base32_alphabet[] = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
 
 float cToF(float c) {
@@ -73,4 +75,32 @@ void generate_serial_number(char *serial_number) {
     }
 
     serial_number[j] = '\0';
+}
+
+void SerialNumber_test(void) {
+	char serial_number[25];
+	generate_serial_number(serial_number);
+	printf("===================================================\r\n\r\n");
+	printf("   VexUF:Horus\r\n\r\n");
+	printf("   Serial Number: %s\r\n\r\n", serial_number);
+	printf("===================================================\r\n");
+}
+
+void temperatureInternal_Test(void) {
+	if (AHT20_Init(&hi2c1) != HAL_OK) {
+		Error_Handler();
+	}
+
+	float temperature = 0.0f;
+	float humidity = 0.0f;
+	// Read temperature and humidity from AHT20
+	printf("Internal AHT20 sensor:\r\n");
+	if (AHT20_ReadTemperatureHumidity(&hi2c1, &temperature, &humidity) == HAL_OK) {
+		printf("  Temperature Internal C: %0.2f\r\n", temperature);
+		printf("  Temperature Internal F: %0.2f\r\n", cToF(temperature));
+		printf("  Humidity Internal %%: %0.2f\r\n", humidity);
+	} else {
+		printf("  Error reading from AHT20\n");
+}
+
 }

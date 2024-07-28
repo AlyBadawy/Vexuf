@@ -140,3 +140,73 @@ void EEPROM_WriteMultipleWords(uint16_t startAddress, uint16_t* buffer, uint16_t
 }
 
 
+void EEPROM_Test(void) {
+	// EEPROM READ TEST
+	// Example usage
+	uint16_t data = EEPROM_Read(0xFFEE);
+	EEPROM_Write(0xFFEE, 0xABCD);
+	data = EEPROM_Read(0xFFEE);
+	printf("EEprom says: %i\r\n", data);
+
+
+
+	uint16_t buffer[128];
+	for (uint16_t address = 0; address < 128; address++) {
+		buffer[address] = EEPROM_Read(address);
+	}
+	for (uint16_t address = 0; address < 128; address += 16) {
+		printf("%10X: ", address);
+		// Print first column (8 words)
+		for (uint16_t i = 0; i < 8; i++) {
+			printf("%04X ", buffer[address + i]);
+		}
+
+		// Print separator
+		printf("    ");
+
+		// Print second column (8 words)
+		for (uint16_t i = 8; i < 16; i++) {
+			printf("%04X ", buffer[address + i]);
+		}
+
+		// New line
+		printf("\r\n");
+
+
+
+	}
+
+	char writeData[25] = "Hello, EEPROM! Testing";
+	char readData[25];
+	uint16_t writeBuffer[13]; // 25 characters will be stored in 13 words (16-bit each)
+	uint16_t readBuffer[13];
+
+	// Convert char array to uint16_t array
+	for (int i = 0; i < 12; i++) {
+		writeBuffer[i] = (writeData[2 * i] << 8) | writeData[2 * i + 1];
+	}
+	// Handle the last character (if array size is odd)
+	writeBuffer[12] = writeData[24];
+
+	// Write to EEPROM
+	EEPROM_WriteMultipleWords(0x0000, writeBuffer, 13);
+
+	// Read from EEPROM
+	EEPROM_ReadMultipleWords(0x0000, readBuffer, 13);
+
+	// Convert uint16_t array back to char array
+	for (int i = 0; i < 12; i++) {
+		readData[2 * i] = (readBuffer[i] >> 8) & 0xFF;
+		readData[2 * i + 1] = readBuffer[i] & 0xFF;
+	}
+	// Handle the last character (if array size is odd)
+	readData[24] = readBuffer[12] & 0xFF;
+
+	// Null-terminate the readData string
+	readData[25] = '\0';
+
+	// Print the read data
+	printf("Read Data: %s\r\n", readData);
+}
+
+
