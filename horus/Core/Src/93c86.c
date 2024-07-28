@@ -6,7 +6,7 @@
  */
 
 
-#include "93CXX.h"
+#include <93c86.h>
 
 
 int16_t MEMrData[1];
