@@ -26,6 +26,7 @@
 #include "rtc.h"
 #include "sdio.h"
 #include "spi.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -35,6 +36,8 @@
 #include "actuators.h"
 #include "i2c_Checker.h"
 #include "i2c_aht20.h"
+#include "indicators.h"
+
 
 /* USER CODE END Includes */
 
@@ -75,6 +78,18 @@ int _write(int file, char *ptr, int len) {
 	}
 	return len;
 }
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    if (htim->Instance == TIM4) { // every 100ms (10Hz);
+    	Indicators_toggleIndWithStatus(FAST);
+    } else if (htim->Instance == TIM9) { // every 1s (1Hz)
+    	Indicators_toggleIndWithStatus(SLOW);
+    } else if (htim->Instance == TIM5) {
+
+    }
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -84,6 +99,7 @@ int _write(int file, char *ptr, int len) {
 int main(void)
 {
 
+  /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
 
@@ -112,6 +128,9 @@ int main(void)
   MX_SDIO_SD_Init();
   MX_FATFS_Init();
   MX_SPI1_Init();
+  MX_TIM4_Init();
+  MX_TIM5_Init();
+  MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
 
 //  SerialNumber_test();
@@ -123,6 +142,19 @@ int main(void)
 //  temperatureInternal_Test();
 //  SDCard_Test();
 
+  // Start TIM4, TIM9, TIM5 in interrupt mode
+  HAL_TIM_Base_Start_IT(&htim4);
+  HAL_TIM_Base_Start_IT(&htim9);
+  HAL_TIM_Base_Start_IT(&htim5);
+
+
+//  Indicators_setStatus(Av1Ind, ON);
+//  Indicators_setStatus(Av2Ind, FAST);
+//  Indicators_setStatus(Av3Ind, SLOW);
+
+//  Indicators_setStatus(ErrorInd, SLOW);
+
+  Actuators_Test();
 
   /* USER CODE END 2 */
 

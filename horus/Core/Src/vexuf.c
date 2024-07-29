@@ -7,6 +7,7 @@
 
 
 #include "vexuf.h"
+#include "i2c_aht20.h"
 
 extern I2C_HandleTypeDef hi2c1;
 
