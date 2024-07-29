@@ -43,7 +43,7 @@ void Actuators_Update(void) {
 }
 
 void Actuators_Lights(GPIO_PinState state) {
-	HAL_GPIO_WritePin(ActLd_GPIO_Port, ActLd_Pin, state);
+	HAL_GPIO_WritePin(ActInd_GPIO_Port, ActInd_Pin, state);
 }
 
 
