@@ -10,10 +10,12 @@
 
 #include "main.h"
 
-#define OFF 0b00
-#define SLOW 0b01
-#define FAST 0b10
-#define ON 0b11
+typedef enum {
+    OFF = 0b00,
+    SLOW = 0b01,
+    FAST = 0b10,
+    ON = 0b11
+} IndicatorStatus;
 
 
 
@@ -33,10 +35,10 @@ typedef struct {
 } IndicatorPin;
 
 void Indicators_init(void);
-void Indicators_setStatus(Indicator ind, uint8_t status);
+void Indicators_setStatus(Indicator ind, IndicatorStatus status);
 void Indicators_clearAllStatuses(void);
-void Indicators_toggleIndWithStatus(uint8_t status);
-uint8_t Indicators_getStatus(Indicator ind);
+void Indicators_toggleIndWithStatus(IndicatorStatus status);
+IndicatorStatus Indicators_getStatus(Indicator ind);
 
 
 #endif /* INC_INDICATORS_H_ */

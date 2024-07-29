@@ -19,9 +19,9 @@ static IndicatorPin indicatorPins[] = {
     {WarnInd_GPIO_Port, WarnInd_Pin}, // WarnInd
     {InfoInd_GPIO_Port, InfoInd_Pin}, // InfoInd
     {Buzzer_GPIO_Port, Buzzer_Pin}, // Buzzer
-    {Av1Ind_GPIO_Port, Av1Ind_Pin}, // Av1Ind
-    {Av2Ind_GPIO_Port, Av2Ind_Pin}, // Av2Ind
-    {Av2Ind_GPIO_Port, Av2Ind_GPIO_Port}  // Av3Ind
+    {Av1Indicator_GPIO_Port, Av1Indicator_Pin}, // Av1Ind
+    {Av2Indicator_GPIO_Port, Av2Indicator_Pin}, // Av2Ind
+    {Av3Indicator_GPIO_Port, Av3Indicator_Pin}  // Av3Ind
 };
 
 void Indicators_init(void) {
@@ -33,7 +33,7 @@ void Indicators_init(void) {
 
 }
 
-void Indicators_setStatus(Indicator ind, uint8_t status) {
+void Indicators_setStatus(Indicator ind, IndicatorStatus status) {
     if (ind < ErrorInd || ind > Av3Ind || status > 0b11) {
         return; // Invalid indicator or status
     }
@@ -55,25 +55,32 @@ void Indicators_setStatus(Indicator ind, uint8_t status) {
 
     // Set the new status
     indicatorsStatus |= (status << (ind * 2));
+
+    if (status == ON) {
+    	HAL_GPIO_WritePin(indicatorPins[ind].port, indicatorPins[ind].pin, GPIO_PIN_SET);
+    } else if (status == OFF) {
+    	HAL_GPIO_WritePin(indicatorPins[ind].port, indicatorPins[ind].pin, GPIO_PIN_RESET);
+    }
 }
 
 void Indicators_clearAllStatuses(void) {
     indicatorsStatus = 0;
 }
 
-void Indicators_toggleIndWithStatus(uint8_t status) {
+void Indicators_toggleIndWithStatus(IndicatorStatus status) {
 	if (status > 0b11) {
 		return; // Invalid status
 	}
 
 	for (Indicator ind = ErrorInd; ind <= Av3Ind; ind++) {
-		if (Indicators_getStatus(ind) == status) {
+		IndicatorStatus s = Indicators_getStatus(ind);
+		if (s == status) {
 			HAL_GPIO_TogglePin(indicatorPins[ind].port, indicatorPins[ind].pin);
 		}
 	}
 }
 
-uint8_t Indicators_getStatus(Indicator ind) {
+IndicatorStatus Indicators_getStatus(Indicator ind) {
     if (ind < ErrorInd || ind > Av3Ind) {
         return OFF; // Invalid indicator
     }

@@ -51,9 +51,9 @@ void Actuators_Test(void) {
 	Actuators_Lights(GPIO_PIN_SET);
 	for(ActuatorPin pin = ACT_PIN_A1; pin <= ACT_PIN_A8; pin++) {
 		Actuators_SetPin(pin);
-		HAL_Delay(100);
+		HAL_Delay(500);
 		Actuators_ResetPin(pin);
-		HAL_Delay(100);
+		HAL_Delay(500);
 	}
 	Actuators_Lights(GPIO_PIN_RESET);
 }
