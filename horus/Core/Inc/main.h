@@ -94,6 +94,8 @@ void Error_Handler(void);
 #define SPI_MISO_GPIO_Port GPIOA
 #define SPI_MOSI_Pin GPIO_PIN_7
 #define SPI_MOSI_GPIO_Port GPIOA
+#define EepromMemOrg_Pin GPIO_PIN_4
+#define EepromMemOrg_GPIO_Port GPIOC
 #define Av1_Pin GPIO_PIN_5
 #define Av1_GPIO_Port GPIOC
 #define Av2_Pin GPIO_PIN_0

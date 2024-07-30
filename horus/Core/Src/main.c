@@ -27,6 +27,7 @@
 #include "sdio.h"
 #include "spi.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -37,6 +38,7 @@
 #include "i2c_Checker.h"
 #include "i2c_aht20.h"
 #include "indicators.h"
+#include "sd_card.h"
 
 
 /* USER CODE END Includes */
@@ -131,6 +133,9 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM5_Init();
   MX_TIM9_Init();
+  MX_USART1_UART_Init();
+  MX_USART6_UART_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
 //  SerialNumber_test();
@@ -140,7 +145,7 @@ int main(void)
 //  testAvs(avsBuffer);
 //  I2C_Scan(&hi2c1);
 //  temperatureInternal_Test();
-//  SDCard_Test();
+  SDCard_Test();
 
   // Start TIM4, TIM9, TIM5 in interrupt mode
   HAL_TIM_Base_Start_IT(&htim4);
