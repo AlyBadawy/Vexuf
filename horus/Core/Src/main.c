@@ -28,6 +28,7 @@
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
+#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -90,6 +91,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
     }
 }
+void USB_DEVICE_MasterHardReset(void)
+{
+	GPIO_InitTypeDef GPIO_InitStruct;
+	GPIO_InitStruct.Pin = GPIO_PIN_12;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,0);
+	HAL_Delay(1000);
+}
+
 
 
 /* USER CODE END 0 */
@@ -118,7 +131,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+//  USB_DEVICE_MasterHardReset();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -136,15 +149,18 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART6_UART_Init();
   MX_TIM3_Init();
+  MX_USB_DEVICE_Init();
+  MX_TIM10_Init();
+  MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
 
-//  SerialNumber_test();
-//  Actuators_Test();
+  SerialNumber_test();
+  Actuators_Test();
 
-//  uint32_t avsBuffer[5];
-//  testAvs(avsBuffer);
-//  I2C_Scan(&hi2c1);
-//  temperatureInternal_Test();
+  uint32_t avsBuffer[5];
+  testAvs(avsBuffer);
+  I2C_Scan(&hi2c1);
+  temperatureInternal_Test();
   SDCard_Test();
 
   // Start TIM4, TIM9, TIM5 in interrupt mode
@@ -153,11 +169,11 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim5);
 
 
-//  Indicators_setStatus(Av1Ind, ON);
-//  Indicators_setStatus(Av2Ind, FAST);
-//  Indicators_setStatus(Av3Ind, SLOW);
+  Indicators_setStatus(Av1Ind, ON);
+  Indicators_setStatus(Av2Ind, FAST);
+  Indicators_setStatus(Av3Ind, SLOW);
 
-//  Indicators_setStatus(ErrorInd, SLOW);
+  Indicators_setStatus(ErrorInd, SLOW);
 
   Actuators_Test();
 
@@ -197,9 +213,9 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 84;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
+  RCC_OscInitStruct.PLL.PLLN = 168;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
+  RCC_OscInitStruct.PLL.PLLQ = 7;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -219,10 +235,6 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_HSE, RCC_MCODIV_1);
-
-  /** Enables the Clock Security System
-  */
-  HAL_RCC_EnableCSS();
 }
 
 /* USER CODE BEGIN 4 */
