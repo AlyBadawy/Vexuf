@@ -59,16 +59,13 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-
 /* USER CODE BEGIN PV */
-
-
+char serialNumber[25];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -91,18 +88,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
     }
 }
-void USB_DEVICE_MasterHardReset(void)
-{
-	GPIO_InitTypeDef GPIO_InitStruct;
-	GPIO_InitStruct.Pin = GPIO_PIN_12;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,0);
-	HAL_Delay(1000);
-}
-
 
 
 /* USER CODE END 0 */
@@ -115,7 +100,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -124,14 +108,12 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-//  USB_DEVICE_MasterHardReset();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -154,28 +136,12 @@ int main(void)
   MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
 
-  SerialNumber_test();
-  Actuators_Test();
-
-  uint32_t avsBuffer[5];
-  testAvs(avsBuffer);
-  I2C_Scan(&hi2c1);
-  temperatureInternal_Test();
-  SDCard_Test();
-
   // Start TIM4, TIM9, TIM5 in interrupt mode
   HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_Base_Start_IT(&htim9);
   HAL_TIM_Base_Start_IT(&htim5);
 
-
-  Indicators_setStatus(Av1Ind, ON);
-  Indicators_setStatus(Av2Ind, FAST);
-  Indicators_setStatus(Av3Ind, SLOW);
-
-  Indicators_setStatus(ErrorInd, SLOW);
-
-  Actuators_Test();
+  HAL_GPIO_WritePin(InfoInd_GPIO_Port, InfoInd_Pin, GPIO_PIN_SET);
 
   /* USER CODE END 2 */
 
@@ -207,9 +173,9 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 8;
@@ -235,6 +201,10 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_HSE, RCC_MCODIV_1);
+
+  /** Enables the Clock Security System
+  */
+  HAL_RCC_EnableCSS();
 }
 
 /* USER CODE BEGIN 4 */

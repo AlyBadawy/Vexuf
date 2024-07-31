@@ -7,7 +7,8 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2024 STMicroelectronics.
+  * Text within  USER CODE sections: Copyright (c) 2024 Aly Badawy
+  * Text outside USER CODE sections: Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -20,6 +21,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if.h"
+#include "main.h"
 
 /* USER CODE BEGIN INCLUDE */
 
@@ -183,24 +185,15 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   switch(cmd)
   {
     case CDC_SEND_ENCAPSULATED_COMMAND:
-
-    break;
-
+    	break;
     case CDC_GET_ENCAPSULATED_RESPONSE:
-
-    break;
-
+    	break;
     case CDC_SET_COMM_FEATURE:
-
-    break;
-
+    	break;
     case CDC_GET_COMM_FEATURE:
-
-    break;
-
+    	break;
     case CDC_CLEAR_COMM_FEATURE:
-
-    break;
+    	break;
 
   /*******************************************************************************/
   /* Line Coding Structure                                                       */
@@ -220,23 +213,18 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /* 6      | bDataBits  |   1   | Number Data bits (5, 6, 7, 8 or 16).          */
   /*******************************************************************************/
     case CDC_SET_LINE_CODING:
-
-    break;
-
+    	break;
     case CDC_GET_LINE_CODING:
-
-    break;
-
+    	break;
     case CDC_SET_CONTROL_LINE_STATE:
-
-    break;
-
+    	if (pbuf[0] & 0x01) { // Check if DTR (Data Terminal Ready) is set
+    		VexUF_USBWelcomeMessage();
+    	}
+    	break;
     case CDC_SEND_BREAK:
-
-    break;
-
-  default:
-    break;
+    	break;
+	default:
+    	break;
   }
 
   return (USBD_OK);

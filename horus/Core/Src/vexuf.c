@@ -10,6 +10,9 @@
 #include "i2c_aht20.h"
 
 extern I2C_HandleTypeDef hi2c1;
+extern RTC_HandleTypeDef hrtc;
+
+extern char serialNumber[25];
 
 static const char custom_base32_alphabet[] = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
 
@@ -48,7 +51,61 @@ void base32_encode(const uint8_t *data, size_t length, char *output) {
     output[index] = '\0';
 }
 
-void generate_serial_number(char *serial_number) {
+void SerialNumber_test(void) {
+	char serial_number[25];
+	generate_serial_number(serial_number);
+	printf("===================================================\r\n\r\n");
+	printf("   VexUF:Horus\r\n\r\n");
+	printf("   Serial Number: %s\r\n\r\n", serial_number);
+	printf("===================================================\r\n");
+}
+
+void temperatureInternal_Test(void) {
+	if (AHT20_Init(&hi2c1) != HAL_OK) {
+		Error_Handler();
+	}
+
+	float temperature = 0.0f;
+	float humidity = 0.0f;
+	// Read temperature and humidity from AHT20
+	printf("Internal AHT20 sensor:\r\n");
+	if (AHT20_ReadTemperatureHumidity(&hi2c1, &temperature, &humidity) == HAL_OK) {
+		printf("  Temperature Internal C: %0.2f\r\n", temperature);
+		printf("  Temperature Internal F: %0.2f\r\n", cToF(temperature));
+		printf("  Humidity Internal %%: %0.2f\r\n", humidity);
+	} else {
+		printf("  Error reading from AHT20\n");
+	}
+}
+
+
+void VexUF_DateTimeString(char *string) {
+	RTC_DateTypeDef sDate = {0};
+	RTC_TimeTypeDef sTime = {0};
+
+	// Get the Date
+	if (HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	// Get the Time
+	if (HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	sprintf(string, "%02d/%02d/20%02d - %02d:%02d:%02d\r\n",
+			sDate.Month,
+			sDate.Date,
+			sDate.Year,
+			sTime.Hours,
+			sTime.Minutes,
+			sTime.Seconds
+		);
+}
+
+void VexUF_SerialNumber(char *serial_number) {
 	char serial[20];
 	uint32_t uid[3];
     uint8_t uid_bytes[12];
@@ -78,30 +135,10 @@ void generate_serial_number(char *serial_number) {
     serial_number[j] = '\0';
 }
 
-void SerialNumber_test(void) {
-	char serial_number[25];
-	generate_serial_number(serial_number);
-	printf("===================================================\r\n\r\n");
-	printf("   VexUF:Horus\r\n\r\n");
-	printf("   Serial Number: %s\r\n\r\n", serial_number);
-	printf("===================================================\r\n");
-}
-
-void temperatureInternal_Test(void) {
-	if (AHT20_Init(&hi2c1) != HAL_OK) {
-		Error_Handler();
-	}
-
-	float temperature = 0.0f;
-	float humidity = 0.0f;
-	// Read temperature and humidity from AHT20
-	printf("Internal AHT20 sensor:\r\n");
-	if (AHT20_ReadTemperatureHumidity(&hi2c1, &temperature, &humidity) == HAL_OK) {
-		printf("  Temperature Internal C: %0.2f\r\n", temperature);
-		printf("  Temperature Internal F: %0.2f\r\n", cToF(temperature));
-		printf("  Humidity Internal %%: %0.2f\r\n", humidity);
-	} else {
-		printf("  Error reading from AHT20\n");
-}
-
+void VexUF_USBWelcomeMessage(void) {
+	char messageBuffer[85];
+	sprintf(messageBuffer, "Hello...\r\nThis is VexUF:Horus...\r\n\r\n");
+	CDC_Transmit_FS((uint8_t *)messageBuffer, strlen(messageBuffer));
+	sprintf(messageBuffer, "Serial Number: %c\r\n", serialNumber);
+	CDC_Transmit_FS((uint8_t *)messageBuffer, strlen(messageBuffer));
 }

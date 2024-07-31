@@ -21,7 +21,6 @@
 #include "rtc.h"
 
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 RTC_HandleTypeDef hrtc;
@@ -31,7 +30,7 @@ void MX_RTC_Init(void)
 {
 
   /* USER CODE BEGIN RTC_Init 0 */
-
+#ifdef RTC_SET_VALUES
   /* USER CODE END RTC_Init 0 */
 
   RTC_TimeTypeDef sTime = {0};
@@ -40,7 +39,7 @@ void MX_RTC_Init(void)
   RTC_TamperTypeDef sTamper = {0};
 
   /* USER CODE BEGIN RTC_Init 1 */
-
+#endif
   /* USER CODE END RTC_Init 1 */
 
   /** Initialize RTC Only
@@ -58,24 +57,24 @@ void MX_RTC_Init(void)
   }
 
   /* USER CODE BEGIN Check_RTC_BKUP */
-
+#ifdef RTC_SET_VALUES
   /* USER CODE END Check_RTC_BKUP */
 
   /** Initialize RTC and set the Time and Date
   */
-  sTime.Hours = 0x0;
-  sTime.Minutes = 0x0;
+  sTime.Hours = 0x15;
+  sTime.Minutes = 0x20;
   sTime.Seconds = 0x0;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+  sTime.StoreOperation = RTC_STOREOPERATION_SET;
   if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
   {
     Error_Handler();
   }
-  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
-  sDate.Month = RTC_MONTH_JANUARY;
-  sDate.Date = 0x1;
-  sDate.Year = 0x0;
+  sDate.WeekDay = RTC_WEEKDAY_TUESDAY;
+  sDate.Month = RTC_MONTH_JULY;
+  sDate.Date = 0x30;
+  sDate.Year = 0x24;
 
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
   {
@@ -89,7 +88,7 @@ void MX_RTC_Init(void)
   sAlarm.AlarmTime.Seconds = 0x0;
   sAlarm.AlarmTime.SubSeconds = 0x0;
   sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+  sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_SET;
   sAlarm.AlarmMask = RTC_ALARMMASK_NONE;
   sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
   sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
@@ -104,6 +103,13 @@ void MX_RTC_Init(void)
   */
   sAlarm.Alarm = RTC_ALARM_B;
   if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Enable the WakeUp
+  */
+  if (HAL_RTCEx_SetWakeUpTimer(&hrtc, 0, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
   {
     Error_Handler();
   }
@@ -123,7 +129,7 @@ void MX_RTC_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN RTC_Init 2 */
-
+#endif
   /* USER CODE END RTC_Init 2 */
 
 }
@@ -141,7 +147,7 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef* rtcHandle)
   /** Initializes the peripherals clock
   */
     PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
-    PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
+    PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
     {
       Error_Handler();

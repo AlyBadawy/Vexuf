@@ -34,6 +34,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include <string.h>
 #include "stdio.h"
+//#include "usbd_cdc_if.h"
 #include "vexuf.h"
 /* USER CODE END Includes */
 
@@ -124,8 +125,6 @@ void Error_Handler(void);
 #define SDIO_DET_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
-#define DisplayLedPWM_Pin GPIO_PIN_4
-#define DisplayLedPWM_GPIO_Port GPIOB
 #define Servo2Pwm_Pin GPIO_PIN_8
 #define Servo2Pwm_GPIO_Port GPIOB
 #define Servo1PWM_Pin GPIO_PIN_9

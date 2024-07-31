@@ -11,6 +11,6 @@
 #include "main.h"
 
 
-void I2C_Scan(I2C_HandleTypeDef *hi2c);
+void I2C_Scan(I2C_HandleTypeDef *hi2c, uint8_t *foundDevices, uint8_t *foundDevicesCount);
 
 #endif /* INC_I2C_CHECKER_H_ */
