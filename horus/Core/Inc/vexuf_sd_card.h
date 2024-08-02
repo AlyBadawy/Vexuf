@@ -5,12 +5,12 @@
  *      Author: Aly Badawy
  */
 
-#ifndef INC_SD_CARD_H_
-#define INC_SD_CARD_H_
+#ifndef INC_VEXUF_SD_CARD_H_
+#define INC_VEXUF_SD_CARD_H_
 
 #include "main.h"
 #include "fatfs.h"
 
 void SDCard_Test(void);
 
-#endif /* INC_SD_CARD_H_ */
+#endif /* INC_VEXUF_SD_CARD_H_ */

@@ -18,6 +18,13 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <vexuf_actuators.h>
+#include <vexuf_adc_avs.h>
+#include <vexuf_eeprom.h>
+#include <vexuf_i2c_aht20.h>
+#include <vexuf_i2c_checker.h>
+#include <vexuf_indicators.h>
+#include <vexuf_sd_card.h>
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
@@ -33,13 +40,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "93c86.h"
-#include "adc_avs.h"
-#include "actuators.h"
-#include "i2c_Checker.h"
-#include "i2c_aht20.h"
-#include "indicators.h"
-#include "sd_card.h"
 
 
 /* USER CODE END Includes */

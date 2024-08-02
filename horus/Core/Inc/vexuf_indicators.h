@@ -5,8 +5,8 @@
  *      Author: Aly Badawy
  */
 
-#ifndef INC_INDICATORS_H_
-#define INC_INDICATORS_H_
+#ifndef INC_VEXUF_INDICATORS_H_
+#define INC_VEXUF_INDICATORS_H_
 
 #include "main.h"
 
@@ -41,4 +41,4 @@ void Indicators_toggleIndWithStatus(IndicatorStatus status);
 IndicatorStatus Indicators_getStatus(Indicator ind);
 
 
-#endif /* INC_INDICATORS_H_ */
+#endif /* INC_VEXUF_INDICATORS_H_ */

@@ -5,8 +5,8 @@
  *      Author: Aly Badawy
  */
 
-#ifndef INC_ACTUATORS_H_
-#define INC_ACTUATORS_H_
+#ifndef INC_VEXUF_ACTUATORS_H_
+#define INC_VEXUF_ACTUATORS_H_
 
 #include "main.h"
 
@@ -31,7 +31,7 @@ void Actuators_Update(void);
 void Actuators_Lights(GPIO_PinState state);
 void Actuators_Test(void);
 
-#endif /* INC_ACTUATORS_H_ */
+#endif /* INC_VEXUF_ACTUATORS_H_ */
 
 
 

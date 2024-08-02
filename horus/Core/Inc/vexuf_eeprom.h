@@ -5,8 +5,8 @@
  *      Author: Aly Badawy
  */
 
-#ifndef INC_93C86_H_
-#define INC_93C86_H_
+#ifndef INC_VEXUF_EEPROM_H_
+#define INC_VEXUF_EEPROM_H_
 
 #include "main.h"
 
@@ -50,4 +50,4 @@ void EEPROM_WriteMultipleWords(uint16_t startAddress, uint16_t* buffer, uint16_t
 
 void EEPROM_Test(void);
 
-#endif /* INC_93C86_H_ */
+#endif /* INC_VEXUF_EEPROM_H_ */

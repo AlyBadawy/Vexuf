@@ -5,7 +5,7 @@
  *      Author: Aly Badawy
  */
 
-#include "actuators.h"
+#include <vexuf_actuators.h>
 
 static uint8_t actuatorsData = 0;
 
