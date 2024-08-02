@@ -6,8 +6,9 @@
  */
 
 
-#include "vexuf_i2c_aht20.h"
 #include "vexuf.h"
+
+
 
 extern I2C_HandleTypeDef hi2c1;
 extern RTC_HandleTypeDef hrtc;
