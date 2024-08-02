@@ -22,7 +22,6 @@ typedef enum {
     ACT_PIN_A8
 } ActuatorPin;
 
-
 // Function prototypes
 void Actuators_Write(uint8_t data);
 void Actuators_SetPin(ActuatorPin pin);

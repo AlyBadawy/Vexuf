@@ -23,7 +23,6 @@ void EEPROM_CS_HIGH(void) {
     HAL_GPIO_WritePin(EEPROM_CS_GPIO_Port, EEPROM_CS_Pin, GPIO_PIN_SET);
 }
 
-
 int EEPROM_IsBusy(void) {
     EEPROM_CS_HIGH();
     HAL_Delay(1); // Small delay to ensure CS low is registered
@@ -32,18 +31,17 @@ int EEPROM_IsBusy(void) {
     return isBusy;
 }
 
-uint8_t SPI_TransmitReceive(uint8_t data) {
+uint8_t EEPROM_TransmitReceive(uint8_t data) {
     uint8_t receivedData;
     HAL_SPI_TransmitReceive(&hspi1, &data, &receivedData, 1, 150);
     return receivedData;
 }
 
-
 void EEPROM_SendCommand(uint16_t command) {
     uint8_t cmdHigh = (command >> 8) & 0xFF;
     uint8_t cmdLow = command & 0xFF;
-    SPI_TransmitReceive(cmdHigh);
-    SPI_TransmitReceive(cmdLow);
+    EEPROM_TransmitReceive(cmdHigh);
+    EEPROM_TransmitReceive(cmdLow);
 }
 
 uint16_t EEPROM_Read(uint16_t address) {
@@ -56,14 +54,14 @@ uint16_t EEPROM_Read(uint16_t address) {
     EEPROM_SendCommand(command);
 
 	// Receive the first byte which contains the dummy bit and the high part of the data
-	temp = SPI_TransmitReceive(0x00);
+	temp = EEPROM_TransmitReceive(0x00);
 	data |= (temp & 0x7F) << 9; // Mask out the dummy bit and shift left to align with the 16-bit data
 
 	// Receive the second byte and combine it with the first byte's data
-	data |= SPI_TransmitReceive(0x00) << 1;
+	data |= EEPROM_TransmitReceive(0x00) << 1;
 
 	// Receive the remaining 7 bits of data
-	temp = SPI_TransmitReceive(0x00);
+	temp = EEPROM_TransmitReceive(0x00);
     data |= (temp >> 7);
     HAL_Delay(30); // Ensure some delay as per datasheet
     return data;
@@ -122,6 +120,18 @@ void EEPROM_EraseAll(void) {
     EEPROM_CS_LOW();
     HAL_Delay(9); // Wait for erase cycle to complete (9 clock cycles)
     EEPROM_WriteDisable();
+}
+
+// Write a boolean to the EEPROM (1 word)
+void EEPROM_WriteBoolean(uint16_t address, bool value) {
+    uint16_t data = value ? 0x0001 : 0x0000;
+    EEPROM_WriteWord(address, data);  // Assume EEPROM_WriteWord is a function to write a word to the EEPROM
+}
+
+// Read a boolean from the EEPROM (1 word)
+bool EEPROM_ReadBoolean(uint16_t address) {
+    uint16_t data = EEPROM_ReadWord(address);  // Assume EEPROM_ReadWord is a function to read a word from the EEPROM
+    return (data == 0x0001);
 }
 
 

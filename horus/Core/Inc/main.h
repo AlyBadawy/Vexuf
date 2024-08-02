@@ -32,9 +32,11 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <string.h>
 #include "stdio.h"
-//#include "usbd_cdc_if.h"
+#include <string.h>
+#include <stdbool.h>
+#include <string.h>
+
 #include "vexuf.h"
 /* USER CODE END Includes */
 
@@ -131,7 +133,8 @@ void Error_Handler(void);
 #define Servo1PWM_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+#define SERIAL_NUMBER_LENGTH 25
+#define CALLSIGN_LENGTH 10
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

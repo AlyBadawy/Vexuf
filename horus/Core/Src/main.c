@@ -33,15 +33,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "93c86.h"
-#include "adc_avs.h"
-#include "actuators.h"
-#include "i2c_Checker.h"
-#include "i2c_aht20.h"
-#include "indicators.h"
-#include "sd_card.h"
-
-
+#include "vexuf.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,6 +43,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -60,7 +53,14 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-char serialNumber[25];
+char serialNumber[SERIAL_NUMBER_LENGTH];
+char callsign[CALLSIGN_LENGTH];
+uint16_t registrationNumber;
+bool v1Enabled, v2Enabled, v3Enabled, v1LedEnabled, v2LedEnabled, v3LedEnabled;
+bool servo1Enabled, servo2Enabled, spiEnabled, i2cEnabled;
+bool actuatorsEnabled[8];
+bool ttlEnabled, tncEnabled, ttlIndicatorEnabled, buzzerEnabled;
+uint16_t ttlBaudRate, tncBaudRate;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -142,6 +142,16 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim5);
 
   HAL_GPIO_WritePin(InfoInd_GPIO_Port, InfoInd_Pin, GPIO_PIN_SET);
+
+  if (CONFIG_IsConfigured()) {
+	printf("is configured\r\n");
+	// TODO: if EEPROM Serial is different, use MCU serial and flash that back
+	CONFIG_LoadSettingsFromEEPROM();
+  } else {
+	CONFIG_SetDefaultSettings();
+	VexUF_SerialNumber(serialNumber);
+	printf("Loading Default\r\n");
+  }
 
   /* USER CODE END 2 */
 

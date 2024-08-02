@@ -17,8 +17,6 @@ typedef enum {
     ON = 0b11
 } IndicatorStatus;
 
-
-
 typedef enum {
     ErrorInd = 0,
     WarnInd = 1,
@@ -28,11 +26,6 @@ typedef enum {
     Av2Ind = 5,
     Av3Ind = 6
 } Indicator;
-
-typedef struct {
-    GPIO_TypeDef* port;
-    uint16_t pin;
-} IndicatorPin;
 
 void Indicators_init(void);
 void Indicators_setStatus(Indicator ind, IndicatorStatus status);
