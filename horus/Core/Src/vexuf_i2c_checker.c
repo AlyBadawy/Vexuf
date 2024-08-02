@@ -5,7 +5,7 @@
  *      Author: alybadawy
  */
 
-#include <vexuf_i2c_checker.h>
+#include "vexuf_i2c_checker.h"
 
 // Function to scan I2C bus for devices and store found addresses in the provided buffer
 void I2C_Scan(I2C_HandleTypeDef *hi2c, uint8_t *foundDevices, uint8_t *foundDevicesCount) {

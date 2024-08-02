@@ -11,13 +11,6 @@
 #include "main.h"
 
 
-/*	Define EEPROM TYPE	*
- * 			93CXX		*/
-
-#define C86
-//#define C56
-//#define C46
-
 
 #define EEPROM_CMD_READ  0x1800
 #define EEPROM_CMD_WRITE 0x1400
