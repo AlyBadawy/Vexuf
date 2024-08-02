@@ -5,8 +5,8 @@
  *      Author: Aly Badawy
  */
 
-#ifndef INC_ADC_AVS_H_
-#define INC_ADC_AVS_H_
+#ifndef INC_VEXUF_ADC_AVS_H_
+#define INC_VEXUF_ADC_AVS_H_
 
 #include "main.h"
 
@@ -27,4 +27,4 @@ float adcToAv(uint32_t vrefValue, uint32_t adcValue);
 
 void testAvs(uint32_t avsBuffer[5]);
 
-#endif /* INC_ADC_AVS_H_ */
+#endif /* INC_VEXUF_ADC_AVS_H_ */

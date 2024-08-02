@@ -5,7 +5,7 @@
  *      Author: Aly Badawy
  */
 
-#include "sd_card.h"
+#include "vexuf_sd_card.h"
 
 void SDCard_Test(void) {
   	printf("\r\n");

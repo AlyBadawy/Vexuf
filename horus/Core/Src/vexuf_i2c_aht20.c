@@ -5,7 +5,7 @@
  *      Author: alybadawy
  */
 
-#include "i2c_aht20.h"
+#include "vexuf_i2c_aht20.h"
 
 #define AHT20_INIT_CMD 0xBE
 #define AHT20_TRIGGER_MEASUREMENT_CMD 0xAC

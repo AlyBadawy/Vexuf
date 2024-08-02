@@ -6,7 +6,7 @@
  */
 
 
-#include <93c86.h>
+#include "vexuf_eeprom.h"
 
 
 int16_t MEMrData[1];

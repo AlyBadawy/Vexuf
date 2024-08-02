@@ -5,7 +5,7 @@
  *      Author: Aly Badawy
  */
 
-#include "adc_avs.h"
+#include "vexuf_adc_avs.h"
 
 extern ADC_HandleTypeDef hadc1;
 

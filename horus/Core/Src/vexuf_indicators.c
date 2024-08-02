@@ -6,7 +6,7 @@
  */
 
 
-#include "indicators.h"
+#include "vexuf_indicators.h"
 
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
