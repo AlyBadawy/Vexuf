@@ -17,8 +17,6 @@ typedef enum {
     ON = 0b11
 } IndicatorStatus;
 
-
-
 typedef enum {
     ErrorInd = 0,
     WarnInd = 1,

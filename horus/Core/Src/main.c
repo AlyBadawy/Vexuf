@@ -42,6 +42,7 @@
 #include "vexuf_i2c_checker.h"
 #include "vexuf_indicators.h"
 #include "vexuf_sd_card.h"
+#include "vexuf_config.h"
 
 /* USER CODE END Includes */
 
@@ -61,7 +62,21 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-char serialNumber[25];
+char serialNumber[SERIAL_NUMBER_LENGTH];
+
+uint32_t registrationNumber;
+char callsign[CALLSIGN_LENGTH];
+SerialConfiguration serialInterface;
+SpiType spiType;
+LcdConfiguration lcdConfig;
+I2CConfiguration i2cConfig;
+OutputConfiguration outputConfig;
+ActuatorsValues actuatorsDefaults;
+AlarmConfiguration alarmConfig[2];
+PwmConfiguration pwmDefaultConfig;
+
+TriggerConfiguration triggers[TRIGS_COUNT];
+AvSensor avSensors[NUMBER_OF_AVS];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -136,7 +151,10 @@ int main(void)
   MX_TIM10_Init();
   MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
-
+  if (CONFIG_IsConfigured()) {
+	  CONFIG_LoadSettingsFromEEPROM();
+	  EEPROM_Test();
+  }
   // Start TIM4, TIM9, TIM5 in interrupt mode
   HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_Base_Start_IT(&htim9);

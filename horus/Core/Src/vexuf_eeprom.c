@@ -12,6 +12,16 @@
 int16_t MEMrData[1];
 int16_t MEMsData[1];
 
+
+void EEPROM_CS_LOW(void);
+void EEPROM_CS_HIGH(void);
+bool EEPROM_IsBusy(void);
+void EEPROM_SendCommand(uint16_t command);
+void EEPROM_WriteEnable(void);
+void EEPROM_WriteDisable(void);
+
+
+
 // SPI handle (assuming it is defined and initialized elsewhere)
 extern SPI_HandleTypeDef hspi1;
 
@@ -24,10 +34,10 @@ void EEPROM_CS_HIGH(void) {
 }
 
 
-int EEPROM_IsBusy(void) {
+bool EEPROM_IsBusy(void) {
     EEPROM_CS_HIGH();
     HAL_Delay(1); // Small delay to ensure CS low is registered
-    int isBusy = (HAL_GPIO_ReadPin(SPI_MISO_GPIO_Port, SPI_MISO_Pin) == GPIO_PIN_RESET);
+    bool isBusy = (HAL_GPIO_ReadPin(SPI_MISO_GPIO_Port, SPI_MISO_Pin) == GPIO_PIN_RESET);
     EEPROM_CS_LOW();
     return isBusy;
 }
@@ -65,7 +75,7 @@ uint16_t EEPROM_Read(uint16_t address) {
 	// Receive the remaining 7 bits of data
 	temp = SPI_TransmitReceive(0x00);
     data |= (temp >> 7);
-    HAL_Delay(30); // Ensure some delay as per datasheet
+    HAL_Delay(10); // Ensure some delay as per datasheet
     return data;
 }
 
@@ -124,9 +134,6 @@ void EEPROM_EraseAll(void) {
     EEPROM_WriteDisable();
 }
 
-
-
-
 void EEPROM_ReadMultipleWords(uint16_t startAddress, uint16_t* buffer, uint16_t length) {
     for (uint16_t i = 0; i < length; i++) {
         buffer[i] = EEPROM_Read(startAddress + i);
@@ -139,6 +146,14 @@ void EEPROM_WriteMultipleWords(uint16_t startAddress, uint16_t* buffer, uint16_t
     }
 }
 
+void EEPROM_WriteBool(uint16_t address, bool value) {
+	uint16_t data = value ? 1 : 0; // Convert bool to uint16_t
+	EEPROM_Write(address, data);
+}
+
+bool EEPROM_ReadBool(uint16_t address) {
+	return EEPROM_Read(address) != 0;
+}
 
 void EEPROM_Test(void) {
 	// EEPROM READ TEST
@@ -146,15 +161,15 @@ void EEPROM_Test(void) {
 	uint16_t data = EEPROM_Read(0xFFEE);
 	EEPROM_Write(0xFFEE, 0xABCD);
 	data = EEPROM_Read(0xFFEE);
-	printf("EEprom says: %i\r\n", data);
+	printf("EEprom says: %04X\r\n", data);
 
 
 
-	uint16_t buffer[128];
-	for (uint16_t address = 0; address < 128; address++) {
+	uint16_t buffer[0x3FF];
+	for (uint16_t address = 0; address < 0x3FF; address++) {
 		buffer[address] = EEPROM_Read(address);
 	}
-	for (uint16_t address = 0; address < 128; address += 16) {
+	for (uint16_t address = 0; address < 0x3FF; address += 16) {
 		printf("%10X: ", address);
 		// Print first column (8 words)
 		for (uint16_t i = 0; i < 8; i++) {

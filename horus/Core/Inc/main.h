@@ -32,9 +32,9 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <string.h>
 #include "stdio.h"
-//#include "usbd_cdc_if.h"
+#include <string.h>
+#include <stdbool.h>
 #include "vexuf.h"
 
 /* USER CODE END Includes */
