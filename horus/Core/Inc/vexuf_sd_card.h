@@ -8,8 +8,15 @@
 #ifndef INC_VEXUF_SD_CARD_H_
 #define INC_VEXUF_SD_CARD_H_
 
-#include "main.h"
+#include "vexuf.h"
 #include "fatfs.h"
+
+FRESULT SDCard_MountFS();
+uint32_t SDCard_GetTotalSize(void);
+uint32_t SDCard_GetFreeSize(void);
+
+
+void SDCard_HandleError(void);
 
 void SDCard_Test(void);
 

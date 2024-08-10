@@ -11,7 +11,9 @@
 #include "vexuf_eeprom.h"
 #include "vexuf.h"
 
+
 extern char serialNumber[SERIAL_NUMBER_LENGTH];
+extern bool isConfigured;
 extern uint32_t registrationNumber;
 extern char callsign[CALLSIGN_LENGTH];
 extern SerialConfiguration serialInterface;
@@ -28,7 +30,8 @@ extern AvSensor avSensors[NUMBER_OF_AVS];
 
 
 bool CONFIG_IsConfigured(void) {
-    return  EEPROM_Read(EEPROM_CONFIG_FLAG_ADDRESS) == CONFIG_FLAG;
+    isConfigured = EEPROM_Read(EEPROM_CONFIG_FLAG_ADDRESS) == CONFIG_FLAG;
+    return isConfigured;
 }
 uint16_t CONFIG_GetConfigVersion(void) {
 	if (!CONFIG_IsConfigured()) {
@@ -39,6 +42,7 @@ uint16_t CONFIG_GetConfigVersion(void) {
 void CONFIG_SetIsConfigured(void) {
 	EEPROM_Write(EEPROM_CONFIG_FLAG_ADDRESS, CONFIG_FLAG);
 	EEPROM_Write(EEPROM_CONFIG_VERSION_ADDRESS, CONFIG_VERSION);
+	isConfigured = true;
 }
 void CONFIG_ReadSerialNumber(char serialNumberBuffer[25]){
 	uint16_t buffer[13] = {0};
@@ -427,62 +431,15 @@ void CONFIG_LoadSettingsFromEEPROM(void) {
 		CONFIG_LoadTrigConfiguration(i);
 	}
 }
-//    EEPROM_ReadMultipleWords(EEPROM_SERIAL_NUMBER_ADDR, (uint16_t*)serialNumber, 13);
-//    EEPROM_ReadMultipleWords(EEPROM_CALLSIGN_ADDR, (uint16_t*)callsign, 5);
-//    EEPROM_ReadMultipleWords(EEPROM_REGISTRATION_NUMBER_ADDR, &registrationNumber, 2);
-//
-//    EEPROM_ReadMultipleWords(EEPROM_V1_ENABLED_ADDR, (uint16_t*)&v1Enabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_V2_ENABLED_ADDR, (uint16_t*)&v2Enabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_V3_ENABLED_ADDR, (uint16_t*)&v3Enabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_V1_LED_ENABLED_ADDR, (uint16_t*)&v1LedEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_V2_LED_ENABLED_ADDR, (uint16_t*)&v2LedEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_V3_LED_ENABLED_ADDR, (uint16_t*)&v3LedEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_SERVO1_ENABLED_ADDR, (uint16_t*)&servo1Enabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_SERVO2_ENABLED_ADDR, (uint16_t*)&servo2Enabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_SPI_ENABLED_ADDR, (uint16_t*)&spiEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_I2C_ENABLED_ADDR, (uint16_t*)&i2cEnabled, 1);
-//
-//    for (int i = 0; i < 8; i++) {
-//        EEPROM_ReadMultipleWords(EEPROM_ACTUATORS_ENABLED_ADDR + i, (uint16_t*)&actuatorsEnabled[i], 1);
-//    }
-//
-//    EEPROM_ReadMultipleWords(EEPROM_TTL_ENABLED_ADDR, (uint16_t*)&ttlEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_TNC_ENABLED_ADDR, (uint16_t*)&tncEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_TTL_INDICATOR_ENABLED_ADDR, (uint16_t*)&ttlIndicatorEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_BUZZER_ENABLED_ADDR, (uint16_t*)&buzzerEnabled, 1);
-//
-//    EEPROM_ReadMultipleWords(EEPROM_TTL_BAUD_RATE_ADDR, &ttlBaudRate, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_TNC_BAUD_RATE_ADDR, &tncBaudRate, 1);
-//}
-//
-//void CONFIG_SetDefaultSettings(void) {
-//    memset(serialNumber, 0, SERIAL_NUMBER_LENGTH);
-//    memset(callsign, 0, CALLSIGN_LENGTH);
-//    registrationNumber = 0;
-//
-//    v1Enabled = false;
-//    v2Enabled = false;
-//    v3Enabled = false;
-//    v1LedEnabled = false;
-//    v2LedEnabled = false;
-//    v3LedEnabled = false;
-//    servo1Enabled = false;
-//    servo2Enabled = false;
-//    spiEnabled = false;
-//    i2cEnabled = false;
-//
-//    for (int i = 0; i < 8; i++) {
-//        actuatorsEnabled[i] = false;
-//    }
-//
-//    ttlEnabled = false;
-//    tncEnabled = false;
-//    ttlIndicatorEnabled = false;
-//    buzzerEnabled = false;
-//
-//    ttlBaudRate = 8;  // Default baud rate
-//    tncBaudRate = 2;  // Default baud rate
-//}
-//
-//
 
+
+void CONFIG_HandleNoConfig(void) {
+	while (!isConfigured) {
+		HAL_GPIO_WritePin(ErrorInd_GPIO_Port, ErrorInd_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(WarnInd_GPIO_Port, WarnInd_Pin, GPIO_PIN_RESET);
+		HAL_Delay(300);
+		HAL_GPIO_WritePin(ErrorInd_GPIO_Port, ErrorInd_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(WarnInd_GPIO_Port, WarnInd_Pin, GPIO_PIN_SET);
+		HAL_Delay(300);
+	}
+}

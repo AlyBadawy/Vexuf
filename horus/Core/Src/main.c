@@ -64,13 +64,14 @@
 /* USER CODE BEGIN PV */
 char serialNumber[SERIAL_NUMBER_LENGTH];
 
+bool isConfigured;
 uint32_t registrationNumber;
 char callsign[CALLSIGN_LENGTH];
 SerialConfiguration serialInterface;
 SpiType spiType;
 LcdConfiguration lcdConfig;
 I2CConfiguration i2cConfig;
-OutputConfiguration outputConfig;
+OutputConfiguration outputConfig = {0};
 ActuatorsValues actuatorsDefaults;
 AlarmConfiguration alarmConfig[2];
 PwmConfiguration pwmDefaultConfig;
@@ -151,10 +152,28 @@ int main(void)
   MX_TIM10_Init();
   MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
+  CONFIG_SetIsConfigured();
   if (CONFIG_IsConfigured()) {
 	  CONFIG_LoadSettingsFromEEPROM();
-	  EEPROM_Test();
+  } else {
+	  CONFIG_HandleNoConfig();
   }
+
+  if (SDCard_MountFS() != FR_OK) {
+	  SDCard_HandleError();
+  }
+
+  uint32_t SdFreeSize = SDCard_GetFreeSize();
+  uint32_t SdTotalSize = SDCard_GetTotalSize();
+
+  char TxBuffer [200];
+  sprintf(TxBuffer, "  Total SD Card Size: %lu Bytes\r\n", SdTotalSize);
+  printf(TxBuffer);
+  sprintf(TxBuffer, "  Free SD Card Space: %lu Bytes\r\n", SdFreeSize);
+  printf(TxBuffer);
+
+
+
   // Start TIM4, TIM9, TIM5 in interrupt mode
   HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_Base_Start_IT(&htim9);

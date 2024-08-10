@@ -98,6 +98,7 @@ uint16_t CONFIG_GetConfigVersion(void);
 void CONFIG_SetIsConfigured(void);
 
 void CONFIG_LoadSettingsFromEEPROM(void);
+void CONFIG_HandleNoConfig(void);
 
 
 
