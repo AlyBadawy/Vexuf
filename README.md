@@ -1,6 +1,6 @@
-# VexUF-Firmwares
+# VexUF
 
-Welcome to the VexUF-Firmwares repository. This repository contains firmware for various VexUF devices, each named after ancient Egyptian gods. Currently, it includes the firmware for the "Horus" and "Seth" devices. Each device has its own folder and README file with specific details.
+Welcome to the VexUF project repository. This repository contains information about various VexUF devices, each named after ancient Egyptian gods. Currently, that includes the "Horus" and "Seth" devices. Each device has its own folder and README file with specific details.
 
 ## Table of Contents
 
@@ -49,7 +49,8 @@ Please ensure that your contributions adhere to the coding standards and guideli
 
 ## License
 
-This repository is licensed under the [Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) License](./LICENSE). You may use, modify, and distribute the code for non-commercial purposes only. For commercial use, please contact the copyright holder for explicit permission.
+This repository is licensed under the [Apache License 2.0](./LICENSE). You may use, modify, and distribute the code under the terms of the license. This includes both non-commercial and commercial purposes, provided that you comply with the terms, including providing proper attribution to the original authors and including a copy of the license in any distributed software.
+
 
 ## Bug Reports and Feature Requests
 
