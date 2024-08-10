@@ -1,18 +1,16 @@
 /*
- * vexuf.h
+ * vexuf_helpers.h
  *
- *  Created on: Jul 27, 2024
+ *  Created on: Aug 10, 2024
  *      Author: Aly Badawy
  */
 
-#ifndef INC_VEXUF_H_
-#define INC_VEXUF_H_
-
-#include "main.h"
-
+#ifndef VEXUF_VEXUF_HELPERS_H_
+#define VEXUF_VEXUF_HELPERS_H_
 
 #define SERIAL_NUMBER_LENGTH		25
 #define CALLSIGN_LENGTH				10
+
 
 typedef enum {Av1, Av2, Av3, InternalTemp, ExternalTemp} TriggerSource;
 typedef enum {lessThan, lessThanOrEqual, Equal, GreaterThanOrEqual, GreaterThan, NotEqual} CompareTest;
@@ -140,13 +138,7 @@ typedef struct {
 float cToF(float c);
 float fToC(float f);
 void base32_encode(const uint8_t *data, size_t length, char *output);
+void VexUF_CurrentDateTimeString(char *string);
+void VexUF_GenerateSerialNumber();
 
-void SerialNumber_test(void);
-void temperatureInternal_Test(void);
-
-void VexUF_DateTimeString(char *string);
-void VexUF_SerialNumber(char *serial_number);
-
-void VexUF_USBWelcomeMessage(void);
-
-#endif /* INC_VEXUF_H_ */
+#endif /* VEXUF_VEXUF_HELPERS_H_ */

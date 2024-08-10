@@ -36,7 +36,6 @@ void EEPROM_CS_HIGH(void) {
 
 bool EEPROM_IsBusy(void) {
     EEPROM_CS_HIGH();
-    HAL_Delay(1); // Small delay to ensure CS low is registered
     bool isBusy = (HAL_GPIO_ReadPin(SPI_MISO_GPIO_Port, SPI_MISO_Pin) == GPIO_PIN_RESET);
     EEPROM_CS_LOW();
     return isBusy;
@@ -75,7 +74,7 @@ uint16_t EEPROM_Read(uint16_t address) {
 	// Receive the remaining 7 bits of data
 	temp = SPI_TransmitReceive(0x00);
     data |= (temp >> 7);
-    HAL_Delay(10); // Ensure some delay as per datasheet
+    HAL_Delay(1); // Ensure some delay as per datasheet
     return data;
 }
 
@@ -83,16 +82,16 @@ void EEPROM_WriteEnable(void) {
 	while (EEPROM_IsBusy());
     EEPROM_CS_HIGH();
     EEPROM_SendCommand(EEPROM_CMD_WREN);
-    HAL_Delay(30); // Ensure some delay as per datasheet
+    HAL_Delay(2); // Ensure some delay as per datasheet
     EEPROM_CS_LOW();
 }
 
 void EEPROM_WriteDisable(void) {
 	while (EEPROM_IsBusy());
-    EEPROM_CS_LOW();
+    EEPROM_CS_HIGH();
     EEPROM_SendCommand(EEPROM_CMD_WRDI);
     HAL_Delay(1);
-    EEPROM_CS_HIGH();
+    EEPROM_CS_LOW();
 }
 
 void EEPROM_Write(uint16_t address, uint16_t data) {
@@ -108,7 +107,7 @@ void EEPROM_Write(uint16_t address, uint16_t data) {
     SPI_TransmitReceive(data & 0xFF); // Send low byte
     EEPROM_CS_LOW();
 
-    HAL_Delay(25); // Wait for write cycle to complete (25 clock cycles)
+    HAL_Delay(2); // Wait for write cycle to complete
     EEPROM_WriteDisable();
 }
 
@@ -120,7 +119,7 @@ void EEPROM_Erase(uint16_t address) {
     EEPROM_CS_HIGH();
     EEPROM_SendCommand(command);
     EEPROM_CS_LOW();
-    HAL_Delay(9); // Wait for erase cycle to complete (9 clock cycles)
+    HAL_Delay(2); // Wait for erase cycle to complete (9 clock cycles)
     EEPROM_WriteDisable();
 }
 
@@ -130,7 +129,7 @@ void EEPROM_EraseAll(void) {
     EEPROM_CS_HIGH();
     EEPROM_SendCommand(EEPROM_CMD_ERASE_ALL);
     EEPROM_CS_LOW();
-    HAL_Delay(9); // Wait for erase cycle to complete (9 clock cycles)
+    HAL_Delay(2); // Wait for erase cycle to complete
     EEPROM_WriteDisable();
 }
 

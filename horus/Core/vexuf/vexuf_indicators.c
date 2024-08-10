@@ -34,20 +34,20 @@ void Indicators_init(void) {
 }
 
 void Indicators_setStatus(Indicator ind, IndicatorStatus status) {
-    if (ind < ErrorInd || ind > Av3Ind || status > 0b11) {
+    if (ind < IndError || ind > IndAv3 || status > 0b11) {
         return; // Invalid indicator or status
     }
 
     // Buzzer can only be on, off, or slow. Not fast
-    if (ind == Buzzer && status == FAST) {
-    	status = SLOW;
+    if (ind == IndBuzzer && status == IndFAST) {
+    	status = IndSLOW;
     }
 
     // Special handling for mutual exclusivity
-    if ((status != OFF) && (ind == ErrorInd || ind == WarnInd || ind == InfoInd)) {
-        indicatorsStatus &= ~(0b11 << (ErrorInd * 2)); // Clear ErrorInd
-        indicatorsStatus &= ~(0b11 << (WarnInd * 2));  // Clear WarnInd
-        indicatorsStatus &= ~(0b11 << (InfoInd * 2));  // Clear InfoInd
+    if ((status != IndOFF) && (ind == IndError || ind == IndWarn || ind == IndInfo)) {
+        indicatorsStatus &= ~(0b11 << (IndError * 2)); // Clear ErrorInd
+        indicatorsStatus &= ~(0b11 << (IndWarn * 2));  // Clear WarnInd
+        indicatorsStatus &= ~(0b11 << (IndInfo * 2));  // Clear InfoInd
     }
 
     // Clear the current status bits for the indicator
@@ -56,9 +56,9 @@ void Indicators_setStatus(Indicator ind, IndicatorStatus status) {
     // Set the new status
     indicatorsStatus |= (status << (ind * 2));
 
-    if (status == ON) {
+    if (status == IndON) {
     	HAL_GPIO_WritePin(indicatorPins[ind].port, indicatorPins[ind].pin, GPIO_PIN_SET);
-    } else if (status == OFF) {
+    } else if (status == IndOFF) {
     	HAL_GPIO_WritePin(indicatorPins[ind].port, indicatorPins[ind].pin, GPIO_PIN_RESET);
     }
 }
@@ -72,7 +72,7 @@ void Indicators_toggleIndWithStatus(IndicatorStatus status) {
 		return; // Invalid status
 	}
 
-	for (Indicator ind = ErrorInd; ind <= Av3Ind; ind++) {
+	for (Indicator ind = IndError; ind <= IndAv3; ind++) {
 		IndicatorStatus s = Indicators_getStatus(ind);
 		if (s == status) {
 			HAL_GPIO_TogglePin(indicatorPins[ind].port, indicatorPins[ind].pin);
@@ -81,8 +81,8 @@ void Indicators_toggleIndWithStatus(IndicatorStatus status) {
 }
 
 IndicatorStatus Indicators_getStatus(Indicator ind) {
-    if (ind < ErrorInd || ind > Av3Ind) {
-        return OFF; // Invalid indicator
+    if (ind < IndError || ind > IndAv3) {
+        return IndOFF; // Invalid indicator
     }
 
     return (indicatorsStatus >> (ind * 2)) & 0b11;

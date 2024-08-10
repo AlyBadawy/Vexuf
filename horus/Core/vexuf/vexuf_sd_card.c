@@ -5,21 +5,88 @@
  *      Author: Aly Badawy
  */
 
+#include "main.h"
+#include "string.h"
 #include "vexuf_sd_card.h"
+#include "vexuf_indicators.h"
+#include "vexuf_timers.h"
 
+FATFS FatFs;
+FIL Fil;
+FRESULT FR_Status;
+FATFS *FS_Ptr;
+UINT RWC, WWC; // Read/Write Word Counter
+DWORD FreeClusters;
+
+
+//char TxBuffer[250];
+//char RW_Buffer[200];
+
+
+
+void SDCard_HandleError(void) {
+	//	if (!outputConfig.error_on_no_sd) return; TODO: Enable this line
+	Indicators_setStatus(IndWarn, IndOFF);
+
+	TIMERS_Stop();
+
+	while (FR_Status != FR_OK) {
+		Indicators_setStatus(IndError, IndOFF);
+		Indicators_setStatus(IndSdio, IndON);
+		HAL_Delay(300);
+		Indicators_setStatus(IndError, IndON);
+		Indicators_setStatus(IndSdio, IndOFF);
+		HAL_Delay(300);
+	}
+}
+
+FRESULT SDCard_MountFS() {
+	char cardLabel[12];
+	FR_Status = f_mount(&FatFs, SDPath, 1);
+	if (FR_Status == FR_OK) {
+		f_getlabel("", cardLabel, NULL);
+		uint8_t st = strncmp("VEXUF_HORUS", cardLabel, 12);
+		if (st != 0) {
+			f_setlabel("VEXUF_HORUS");
+		}
+	}
+	return FR_Status;
+}
+
+float SDCard_GetTotalSize(void) {
+	uint64_t total_sectors;
+	uint64_t total_space;
+    FR_Status =  f_getfree("", &FreeClusters, &FS_Ptr);
+    if (FR_Status != FR_OK) {
+    	SDCard_HandleError();
+    	return 0;
+    }
+
+    total_sectors = (uint64_t)(FS_Ptr->n_fatent - 2) * FS_Ptr->csize;				// Calculate total sectors
+	total_space = total_sectors * 512;										// Convert to bytes
+	return (float)total_space / (1024 * 1024 * 1024);						// Convert to gigabytes (use float for GB to handle large values)
+}
+
+float SDCard_GetFreeSize(void) {
+	uint64_t free_sectors;
+	uint64_t free_space;
+	FR_Status =  f_getfree("", &FreeClusters, &FS_Ptr);
+	if (FR_Status != FR_OK) {
+		SDCard_HandleError();
+		return 0;
+	}
+	free_sectors = (uint64_t)FreeClusters * FS_Ptr->csize;					// Calculate free sectors
+	free_space = free_sectors * 512;										// Convert to bytes
+	return (float)free_space / (1024 * 1024 * 1024);						// Convert to gigabytes (use float for GB to handle large values)
+}
+
+
+/*
 void SDCard_Test(void) {
   	printf("\r\n");
   	printf("Testing SD Card Functionalities...\r\n");
 
-    char TxBuffer[250];
-  	FATFS FatFs;
-    FIL Fil;
-    FRESULT FR_Status;
-    FATFS *FS_Ptr;
-    UINT RWC, WWC; // Read/Write Word Counter
-    DWORD FreeClusters;
-    uint32_t TotalSize, FreeSpace;
-    char RW_Buffer[200];
+
     do
     {
       //------------------[ Mount The SD Card ]--------------------
@@ -101,13 +168,11 @@ void SDCard_Test(void) {
       f_close(&Fil);
       //------------------[ Delete The Text File ]--------------------
       // Delete The File
-      /*
       FR_Status = f_unlink(MyTextFile.txt);
       if (FR_Status != FR_OK){
           sprintf(TxBuffer, "Error! While Deleting The (MyTextFile.txt) File.. \r\n");
           USC_CDC_Print(TxBuffer);
       }
-      */
     } while(0);
     //------------------[ Test Complete! Unmount The SD Card ]--------------------
     FR_Status = f_mount(NULL, "", 0);
@@ -120,3 +185,5 @@ void SDCard_Test(void) {
         printf(TxBuffer);
     }
 }
+
+*/

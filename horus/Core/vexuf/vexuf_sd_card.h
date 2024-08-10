@@ -11,6 +11,15 @@
 #include "main.h"
 #include "fatfs.h"
 
+
+
+FRESULT SDCard_MountFS();
+float SDCard_GetTotalSize(void);
+float SDCard_GetFreeSize(void);
+
+
+void SDCard_HandleError(void);
+
 void SDCard_Test(void);
 
 #endif /* INC_VEXUF_SD_CARD_H_ */

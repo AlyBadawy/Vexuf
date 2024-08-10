@@ -35,7 +35,6 @@ extern "C" {
 #include "stdio.h"
 #include <string.h>
 #include <stdbool.h>
-#include "vexuf.h"
 
 /* USER CODE END Includes */
 

@@ -1,14 +1,12 @@
 /*
- * vexuf.c
+ * vexuf_helpers.c
  *
- *  Created on: Jul 27, 2024
+ *  Created on: Aug 10, 2024
  *      Author: Aly Badawy
  */
 
-
-#include "vexuf.h"
-
-
+#include "main.h"
+#include "vexuf_helpers.h"
 
 extern I2C_HandleTypeDef hi2c1;
 extern RTC_HandleTypeDef hrtc;
@@ -52,35 +50,7 @@ void base32_encode(const uint8_t *data, size_t length, char *output) {
     output[index] = '\0';
 }
 
-void SerialNumber_test(void) {
-	char serial_number[25];
-	generate_serial_number(serial_number);
-	printf("===================================================\r\n\r\n");
-	printf("   VexUF:Horus\r\n\r\n");
-	printf("   Serial Number: %s\r\n\r\n", serial_number);
-	printf("===================================================\r\n");
-}
-
-void temperatureInternal_Test(void) {
-	if (AHT20_Init(&hi2c1) != HAL_OK) {
-		Error_Handler();
-	}
-
-	float temperature = 0.0f;
-	float humidity = 0.0f;
-	// Read temperature and humidity from AHT20
-	printf("Internal AHT20 sensor:\r\n");
-	if (AHT20_ReadTemperatureHumidity(&hi2c1, &temperature, &humidity) == HAL_OK) {
-		printf("  Temperature Internal C: %0.2f\r\n", temperature);
-		printf("  Temperature Internal F: %0.2f\r\n", cToF(temperature));
-		printf("  Humidity Internal %%: %0.2f\r\n", humidity);
-	} else {
-		printf("  Error reading from AHT20\n");
-	}
-}
-
-
-void VexUF_DateTimeString(char *string) {
+void VexUF_CurrentDateTimeString(char *string) {
 	RTC_DateTypeDef sDate = {0};
 	RTC_TimeTypeDef sTime = {0};
 
@@ -106,7 +76,7 @@ void VexUF_DateTimeString(char *string) {
 		);
 }
 
-void VexUF_SerialNumber(char *serial_number) {
+void VexUF_GenerateSerialNumber() {
 	char serial[20];
 	uint32_t uid[3];
     uint8_t uid_bytes[12];
@@ -128,18 +98,10 @@ void VexUF_SerialNumber(char *serial_number) {
     int length = strlen(serial);
     for (i = 0, j = 0; i < length; i++) {
         if (i > 0 && i % 5 == 0) {
-        	serial_number[j++] = '-';
+        	serialNumber[j++] = '-';
         }
-        serial_number[j++] = serial[i];
+        serialNumber[j++] = serial[i];
     }
 
-    serial_number[j] = '\0';
-}
-
-void VexUF_USBWelcomeMessage(void) {
-	char messageBuffer[85];
-	sprintf(messageBuffer, "Hello...\r\nThis is VexUF:Horus...\r\n\r\n");
-	CDC_Transmit_FS((uint8_t *)messageBuffer, strlen(messageBuffer));
-	sprintf(messageBuffer, "Serial Number: %c\r\n", serialNumber);
-	CDC_Transmit_FS((uint8_t *)messageBuffer, strlen(messageBuffer));
+    serialNumber[j] = '\0';
 }

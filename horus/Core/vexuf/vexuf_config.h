@@ -14,9 +14,9 @@
 
 #define  CONFIG_FLAG 					0x3E3E
 #define  CONFIG_VERSION   				1
-#define  TRIGS_COUNT					30
-#define  NUMBER_OF_AVS					3
-#define  NUMBER_OF_Actuators			8
+#define  CONFIG_TRIGS_COUNT				30
+#define  CONFIG_NUMBER_OF_AVS			3
+#define  CONFIG_NUMBER_OF_Actuators		8
 
 
 
@@ -96,6 +96,7 @@
 bool CONFIG_IsConfigured(void);
 uint16_t CONFIG_GetConfigVersion(void);
 void CONFIG_SetIsConfigured(void);
+void CONFIG_HandleNoConfig(void);
 
 void CONFIG_LoadSettingsFromEEPROM(void);
 

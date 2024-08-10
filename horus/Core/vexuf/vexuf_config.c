@@ -5,11 +5,10 @@
  *      Author: Aly Badawy
  */
 
-
+#include "main.h"
 #include "vexuf_config.h"
-#include "vexuf_indicators.h"
+#include "vexuf_helpers.h"
 #include "vexuf_eeprom.h"
-#include "vexuf.h"
 
 extern char serialNumber[SERIAL_NUMBER_LENGTH];
 extern uint32_t registrationNumber;
@@ -23,12 +22,14 @@ extern ActuatorsValues actuatorsDefaults;
 extern AlarmConfiguration alarmConfig[2];
 extern PwmConfiguration pwmDefaultConfig;
 
-extern TriggerConfiguration triggers[TRIGS_COUNT];
-extern AvSensor avSensors[NUMBER_OF_AVS];
+extern TriggerConfiguration triggers[CONFIG_TRIGS_COUNT];
+extern AvSensor avSensors[CONFIG_NUMBER_OF_AVS];
 
+bool isConfigured;
 
 bool CONFIG_IsConfigured(void) {
-    return  EEPROM_Read(EEPROM_CONFIG_FLAG_ADDRESS) == CONFIG_FLAG;
+	isConfigured = EEPROM_Read(EEPROM_CONFIG_FLAG_ADDRESS) == CONFIG_FLAG;
+	return isConfigured;
 }
 uint16_t CONFIG_GetConfigVersion(void) {
 	if (!CONFIG_IsConfigured()) {
@@ -39,7 +40,22 @@ uint16_t CONFIG_GetConfigVersion(void) {
 void CONFIG_SetIsConfigured(void) {
 	EEPROM_Write(EEPROM_CONFIG_FLAG_ADDRESS, CONFIG_FLAG);
 	EEPROM_Write(EEPROM_CONFIG_VERSION_ADDRESS, CONFIG_VERSION);
+	isConfigured = true;
 }
+void CONFIG_HandleNoConfig(void) {
+	Indicators_setStatus(IndWarn, IndOFF);
+	while (!isConfigured) {
+		Indicators_setStatus(IndError, IndOFF);
+		Indicators_setStatus(IndWarn, IndON);
+		HAL_Delay(300);
+		Indicators_setStatus(IndError, IndON);
+		Indicators_setStatus(IndWarn, IndOFF);
+		HAL_Delay(300);
+	}
+}
+
+
+
 void CONFIG_ReadSerialNumber(char serialNumberBuffer[25]){
 	uint16_t buffer[13] = {0};
 	EEPROM_ReadMultipleWords(EEPROM_SERIAL_NUMBER_ADDRESS, buffer, EEPROM_SERIAL_NUMBER_LENGTH);
@@ -420,10 +436,10 @@ void CONFIG_LoadSettingsFromEEPROM(void) {
 	CONFIG_LoadAlarm(0);
 	CONFIG_LoadAlarm(1);
 	CONFIG_LoadPwmDefaultConfigurations();
-	for (int i=0; i<NUMBER_OF_AVS; i++) {
+	for (int i=0; i<CONFIG_NUMBER_OF_AVS; i++) {
 		CONFIG_LoadAvSensor(i);
 	}
-	for (int i=0; i<TRIGS_COUNT; i++) {
+	for (int i=0; i<CONFIG_TRIGS_COUNT; i++) {
 		CONFIG_LoadTrigConfiguration(i);
 	}
 }

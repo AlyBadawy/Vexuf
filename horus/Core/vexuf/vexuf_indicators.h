@@ -11,20 +11,21 @@
 #include "main.h"
 
 typedef enum {
-    OFF = 0b00,
-    SLOW = 0b01,
-    FAST = 0b10,
-    ON = 0b11
+    IndOFF = 0b00,
+    IndSLOW = 0b01,
+    IndFAST = 0b10,
+    IndON = 0b11
 } IndicatorStatus;
 
 typedef enum {
-    ErrorInd = 0,
-    WarnInd = 1,
-    InfoInd = 2,
-    Buzzer = 3,
-    Av1Ind = 4,
-    Av2Ind = 5,
-    Av3Ind = 6
+    IndError = 0,
+	IndWarn = 1,
+	IndInfo = 2,
+	IndBuzzer = 3,
+	IndSdio = 4,
+	IndAv1 = 5,
+	IndAv2 = 6,
+	IndAv3 = 7
 } Indicator;
 
 typedef struct {
