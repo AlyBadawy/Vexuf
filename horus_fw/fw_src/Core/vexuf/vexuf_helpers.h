@@ -80,24 +80,6 @@ typedef struct {
 } ActuatorsValues;
 
 typedef struct {
-     uint16_t enabled : 1;                		// 1 bit
-     uint16_t indicatorEnabled : 1;       		// 1 bit
-     uint16_t statusOff : 1;              		// 1 bit
-     uint16_t statusSlow : 1;             		// 1 bit
-     uint16_t statusFast : 1;             		// 1 bit
-     uint16_t statusOn : 1;               		// 1 bit
-     uint16_t reserved : 10;              		// 10 bits (padding to make 16 bits total)
-     uint16_t minOff;                     		// 16 bits
-     uint16_t maxOff;                     		// 16 bits
-     uint16_t minSlow;                    		// 16 bits
-     uint16_t maxSlow;                    		// 16 bits
-     uint16_t minFast;                    		// 16 bits
-     uint16_t maxFast;                    		// 16 bits
-     uint16_t minOn;                      		// 16 bits
-     uint16_t maxOn;                      		// 16 bits
-} AvSensor;
-
-typedef struct {
     uint16_t enabled : 1;           			// 1 bit
     CompareTest test:3;							// 3 bits, enough to hold 6 choices
     uint16_t reserved : 12;     			    // 12 bits (padding to make 16 bits total)

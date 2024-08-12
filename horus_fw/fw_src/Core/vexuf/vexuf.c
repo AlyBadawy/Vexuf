@@ -13,10 +13,15 @@
 #include "vexuf_sd_card.h"
 #include "vexuf_indicators.h"
 #include "vexuf_timers.h"
+#include "vexuf_adc_avs.h"
+
+
+
+extern ADC_HandleTypeDef hadc1;
+extern uint32_t adcBuffer[5];
 
 
 char serialNumber[SERIAL_NUMBER_LENGTH];
-
 uint32_t registrationNumber;
 char callsign[CALLSIGN_LENGTH];
 SerialConfiguration serialInterface;
@@ -29,7 +34,9 @@ AlarmConfiguration alarmConfig[2];
 PwmConfiguration pwmDefaultConfig;
 
 TriggerConfiguration triggers[CONFIG_TRIGS_COUNT];
-AvSensor avSensors[CONFIG_NUMBER_OF_AVS];
+AvSensor avSensors[NUMBER_OF_AVS];
+
+bool timerTicked = false;
 
 
 void VexUF_Init(void) {
@@ -37,20 +44,28 @@ void VexUF_Init(void) {
 
 	VexUF_GenerateSerialNumber();
 
-	CONFIG_SetIsConfigured();
+	CONFIG_SetIsConfigured(); // TODO: Remove this before release!
 
 	// Check if the EEPROM has configuration, otherwise halt!
-	if (CONFIG_IsConfigured()) {
-		CONFIG_LoadSettingsFromEEPROM();
-	} else {
-		CONFIG_HandleNoConfig();
-	}
-
+	if (!CONFIG_IsConfigured()) CONFIG_HandleNoConfig();
+	CONFIG_WriteSerialNumber();
 	// Mount the SD Card, and handle the error if fails
-	if (SDCard_MountFS() != FR_OK) {
-		SDCard_HandleError();
-	}
+	if (SDCard_MountFS() != FR_OK) SDCard_HandleError();
 
+	CONFIG_LoadSettingsFromEEPROM();
+
+ 	HAL_ADC_Start_DMA(&hadc1, adcBuffer, 5);
+	HAL_Delay(50);
+
+	HAL_Delay(500);
+
+	AvSensor sens;
+	sens.enabled = true;
+	sens.indicatorEnabled = true;
+	sens.minFast = 300;
+	sens.maxFast = 400;
+	sens.statusFast = true;
+	CONFIG_SetAvSensor(2, &sens);
 
 	TIMERS_Start();
 
@@ -58,72 +73,12 @@ void VexUF_Init(void) {
 	Indicators_setStatus(IndWarn, IndOFF);
 }
 
-//
-//void SerialNumber_test(void) {
-//	char serial_number[25];
-//	generate_serial_number(serial_number);
-//	printf("===================================================\r\n\r\n");
-//	printf("   VexUF:Horus\r\n\r\n");
-//	printf("   Serial Number: %s\r\n\r\n", serial_number);
-//	printf("===================================================\r\n");
-//}
-//
-//
-//void temperatureInternal_Test(void) {
-//	if (AHT20_Init(&hi2c1) != HAL_OK) {
-//		Error_Handler();
-//	}
-//
-//	float temperature = 0.0f;
-//	float humidity = 0.0f;
-//	// Read temperature and humidity from AHT20
-//	printf("Internal AHT20 sensor:\r\n");
-//	if (AHT20_ReadTemperatureHumidity(&hi2c1, &temperature, &humidity) == HAL_OK) {
-//		printf("  Temperature Internal C: %0.2f\r\n", temperature);
-//		printf("  Temperature Internal F: %0.2f\r\n", cToF(temperature));
-//		printf("  Humidity Internal %%: %0.2f\r\n", humidity);
-//	} else {
-//		printf("  Error reading from AHT20\n");
-//	}
-//}
-//
-//
-//
-//
-//void VexUF_SerialNumber(char *serial_number) {
-//	char serial[20];
-//	uint32_t uid[3];
-//    uint8_t uid_bytes[12];
-//
-//    uid[2] = HAL_GetUIDw0();
-//    uid[1] = HAL_GetUIDw1();
-//    uid[0] = HAL_GetUIDw2();
-//
-//    for (int i = 0; i < 3; i++) {
-//    	uid_bytes[4*i] = (uid[i] >> 24) & 0xFF;
-//    	uid_bytes[4*i + 1] = (uid[i] >> 16) & 0xFF;
-//    	uid_bytes[4*i + 2] = (uid[i] >> 8) & 0xFF;
-//    	uid_bytes[4*i + 3] = uid[i] & 0xFF;
-//	}
-//
-//    base32_encode(uid_bytes, 12, serial);
-//
-//    int i, j;
-//    int length = strlen(serial);
-//    for (i = 0, j = 0; i < length; i++) {
-//        if (i > 0 && i % 5 == 0) {
-//        	serial_number[j++] = '-';
-//        }
-//        serial_number[j++] = serial[i];
-//    }
-//
-//    serial_number[j] = '\0';
-//}
-//
-//void VexUF_USBWelcomeMessage(void) {
-//	char messageBuffer[85];
-//	sprintf(messageBuffer, "Hello...\r\nThis is VexUF:Horus...\r\n\r\n");
-//	CDC_Transmit_FS((uint8_t *)messageBuffer, strlen(messageBuffer));
-//	sprintf(messageBuffer, "Serial Number: %c\r\n", serialNumber);
-//	CDC_Transmit_FS((uint8_t *)messageBuffer, strlen(messageBuffer));
-//}
+void VEXUF_run(void) {
+
+	ADC_Scan();
+	if (timerTicked) {
+		timerTicked = false;
+	}
+}
+
+

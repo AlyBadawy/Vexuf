@@ -7,9 +7,12 @@
 
 #include "main.h"
 #include "string.h"
+#include "vexuf_helpers.h"
 #include "vexuf_sd_card.h"
 #include "vexuf_indicators.h"
 #include "vexuf_timers.h"
+
+extern OutputConfiguration outputConfig;
 
 FATFS FatFs;
 FIL Fil;
@@ -25,7 +28,7 @@ DWORD FreeClusters;
 
 
 void SDCard_HandleError(void) {
-	//	if (!outputConfig.error_on_no_sd) return; TODO: Enable this line
+	if (!outputConfig.error_on_no_sd) return;
 	Indicators_setStatus(IndWarn, IndOFF);
 
 	TIMERS_Stop();

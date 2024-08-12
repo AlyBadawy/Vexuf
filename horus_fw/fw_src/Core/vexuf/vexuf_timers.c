@@ -12,15 +12,7 @@ extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim9;
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    if (htim->Instance == TIM4) { // every 100ms (10Hz);
-    	Indicators_toggleIndWithStatus(IndFAST);
-    } else if (htim->Instance == TIM9) { // every 1s (1Hz)
-    	Indicators_toggleIndWithStatus(IndSLOW);
-    } else if (htim->Instance == TIM5) { // every 10 seconds (0.1Hz)
-
-    }
-}
+extern bool timerTicked;
 
 void TIMERS_Start(void) {
 	// Start TIM4, TIM9, TIM5 in interrupt mode
@@ -34,6 +26,16 @@ void TIMERS_Stop(void) {
 	HAL_TIM_Base_Stop_IT(&htim4);
 	HAL_TIM_Base_Stop_IT(&htim5);
 	HAL_TIM_Base_Stop_IT(&htim9);
+}
+
+void TIMERS_10Hz(void) {
+	Indicators_toggleIndWithStatus(IndFAST);
+}
+void TIMERS_1Hz(void) {
+	Indicators_toggleIndWithStatus(IndSLOW);
+}
+void TIMERS_0d1Hz(void){
+	timerTicked = true;
 }
 
 

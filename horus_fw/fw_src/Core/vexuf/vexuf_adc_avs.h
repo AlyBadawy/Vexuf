@@ -21,10 +21,27 @@
 #define adcR2               3300.0
 #define adcRatio			(adcR2 / (adcR1 + adcR2))
 
-float getVref(uint32_t adcValue);
-float getCpuTempC(uint32_t vrefValue, uint32_t adcValue);
-float adcToAv(uint32_t vrefValue, uint32_t adcValue);
+#define  NUMBER_OF_AVS		3
 
-void testAvs(uint32_t avsBuffer[5]);
+typedef struct {
+     uint16_t enabled : 1;                		// 1 bit
+     uint16_t indicatorEnabled : 1;       		// 1 bit
+     uint16_t statusSlow : 1;             		// 1 bit
+     uint16_t statusFast : 1;             		// 1 bit
+     uint16_t statusOn : 1;               		// 1 bit
+     uint16_t reserved : 11;              		// 10 bits (padding to make 16 bits total)
+     uint16_t minSlow;                    		// 16 bits
+     uint16_t maxSlow;                    		// 16 bits
+     uint16_t minFast;                    		// 16 bits
+     uint16_t maxFast;                    		// 16 bits
+     uint16_t minOn;                      		// 16 bits
+     uint16_t maxOn;                      		// 16 bits
+} AvSensor;
+
+void ADC_getVref(void);
+void ADC_getCpuTempC(void);
+float ADC_rawToVoltage(uint32_t adcValue);
+
+void ADC_Scan();
 
 #endif /* INC_VEXUF_ADC_AVS_H_ */

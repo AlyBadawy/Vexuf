@@ -5,10 +5,11 @@
  *      Author: Aly Badawy
  */
 
-#include "main.h"
 #include "vexuf_config.h"
+
 #include "vexuf_helpers.h"
 #include "vexuf_eeprom.h"
+#include "vexuf_adc_avs.h"
 
 extern char serialNumber[SERIAL_NUMBER_LENGTH];
 extern uint32_t registrationNumber;
@@ -23,7 +24,7 @@ extern AlarmConfiguration alarmConfig[2];
 extern PwmConfiguration pwmDefaultConfig;
 
 extern TriggerConfiguration triggers[CONFIG_TRIGS_COUNT];
-extern AvSensor avSensors[CONFIG_NUMBER_OF_AVS];
+extern AvSensor avSensors[NUMBER_OF_AVS];
 
 bool isConfigured;
 
@@ -40,6 +41,8 @@ uint16_t CONFIG_GetConfigVersion(void) {
 void CONFIG_SetIsConfigured(void) {
 	EEPROM_Write(EEPROM_CONFIG_FLAG_ADDRESS, CONFIG_FLAG);
 	EEPROM_Write(EEPROM_CONFIG_VERSION_ADDRESS, CONFIG_VERSION);
+	CONFIG_WriteSerialNumber();
+	//TODO: Increase config count
 	isConfigured = true;
 }
 void CONFIG_HandleNoConfig(void) {
@@ -54,8 +57,6 @@ void CONFIG_HandleNoConfig(void) {
 	}
 }
 
-
-
 void CONFIG_ReadSerialNumber(char serialNumberBuffer[25]){
 	uint16_t buffer[13] = {0};
 	EEPROM_ReadMultipleWords(EEPROM_SERIAL_NUMBER_ADDRESS, buffer, EEPROM_SERIAL_NUMBER_LENGTH);
@@ -65,7 +66,7 @@ void CONFIG_ReadSerialNumber(char serialNumberBuffer[25]){
 	}
 	serialNumberBuffer[24] = buffer[12] & 0xFF;
 }
-void CONFIG_WriteSerialNumber(void){
+void CONFIG_WriteSerialNumber(void) {
 	uint16_t buffer[EEPROM_SERIAL_NUMBER_LENGTH] = {0};
 	for (int i = 0; i < 12; i++) {
 		buffer[i] = (serialNumber[2 * i] & 0xFF) | ((serialNumber[2 * i + 1] & 0xFF) << 8);
@@ -190,12 +191,9 @@ void CONFIG_SetActuatorsDefault(ActuatorsValues *newActuatorDefaults) {
 }
 
 void CONFIG_LoadAvSensor(uint8_t index) {
-	uint16_t en_and_led = EEPROM_Read(EEPROM_AV_EN_AND_LED_ADDRESS + (EEPROM_AV_SHIFT * index));
-	avSensors[index].enabled = (en_and_led >> 0) & 0x01;
-	avSensors[index].indicatorEnabled = (en_and_led >> 1) & 0x01;
+	avSensors[index].enabled = EEPROM_Read(EEPROM_AV_ENABLED_ADDRESS + (EEPROM_AV_SHIFT * index));
+	avSensors[index].indicatorEnabled = EEPROM_Read(EEPROM_AV_LED_ADDRESS + (EEPROM_AV_SHIFT * index));
 
-	uint16_t status_off = EEPROM_Read(EEPROM_AV_OFF_RULE_ENABLED_ADDRESS + (EEPROM_AV_SHIFT * index));
-	avSensors[index].statusOff = status_off & 0x01;
 
 	uint16_t status_slow = EEPROM_Read(EEPROM_AV_SLOW_RULE_ENABLED_ADDRESS + (EEPROM_AV_SHIFT * index));
 	avSensors[index].statusSlow = status_slow & 0x01;
@@ -205,10 +203,6 @@ void CONFIG_LoadAvSensor(uint8_t index) {
 
 	uint16_t status_on = EEPROM_Read(EEPROM_AV_ON_RULE_ENABLED_ADDRESS + (EEPROM_AV_SHIFT * index));
 	avSensors[index].statusOn = status_on & 0x01;
-
-
-	avSensors[index].minOff = EEPROM_Read(EEPROM_AV_OFF_RULE_MIN_ADDRESS + (EEPROM_AV_SHIFT * index));
-	avSensors[index].maxOff = EEPROM_Read(EEPROM_AV_OFF_RULE_MAX_ADDRESS + (EEPROM_AV_SHIFT * index));
 
 	avSensors[index].minSlow = EEPROM_Read(EEPROM_AV_SLOW_RULE_MIN_ADDRESS + (EEPROM_AV_SHIFT * index));
 	avSensors[index].maxSlow = EEPROM_Read(EEPROM_AV_SLOW_RULE_MAX_ADDRESS + (EEPROM_AV_SHIFT * index));
@@ -221,16 +215,12 @@ void CONFIG_LoadAvSensor(uint8_t index) {
 }
 void CONFIG_SetAvSensor(uint8_t index, AvSensor *sensor) {
     // Write the enabled and indicatorEnabled bits
-    uint16_t en_and_led = (sensor->enabled << 0) | (sensor->indicatorEnabled << 1);
     avSensors[index].enabled = sensor ->enabled;
     avSensors[index].enabled = sensor ->indicatorEnabled;
-    EEPROM_Write(EEPROM_AV_EN_AND_LED_ADDRESS + (EEPROM_AV_SHIFT * index), en_and_led);
+    EEPROM_Write(EEPROM_AV_ENABLED_ADDRESS + (EEPROM_AV_SHIFT * index), avSensors[index].enabled);
+    EEPROM_Write(EEPROM_AV_LED_ADDRESS + (EEPROM_AV_SHIFT * index), avSensors[index].indicatorEnabled);
 
     // Write the status bits
-    uint16_t status_off = sensor->statusOff ? 0x01 : 0x00;
-    avSensors[index].statusOff = sensor->statusOff;
-    EEPROM_Write(EEPROM_AV_OFF_RULE_ENABLED_ADDRESS + (EEPROM_AV_SHIFT * index), status_off);
-
     uint16_t status_slow = sensor->statusSlow ? 0x01 : 0x00;
     avSensors[index].statusSlow = sensor->statusSlow;
     EEPROM_Write(EEPROM_AV_SLOW_RULE_ENABLED_ADDRESS + (EEPROM_AV_SHIFT * index), status_slow);
@@ -242,11 +232,6 @@ void CONFIG_SetAvSensor(uint8_t index, AvSensor *sensor) {
     uint16_t status_on = sensor->statusOn ? 0x01 : 0x00;
     avSensors[index].statusOn = sensor->statusOn;
     EEPROM_Write(EEPROM_AV_ON_RULE_ENABLED_ADDRESS + (EEPROM_AV_SHIFT * index), status_on);
-
-    EEPROM_Write(EEPROM_AV_OFF_RULE_MIN_ADDRESS + (EEPROM_AV_SHIFT * index), sensor->minOff);
-    EEPROM_Write(EEPROM_AV_OFF_RULE_MAX_ADDRESS + (EEPROM_AV_SHIFT * index), sensor->maxOff);
-    avSensors[index].minOff = sensor->minOff;
-    avSensors[index].maxOff = sensor->maxOff;
 
     EEPROM_Write(EEPROM_AV_SLOW_RULE_MIN_ADDRESS + (EEPROM_AV_SHIFT * index), sensor->minSlow);
     EEPROM_Write(EEPROM_AV_SLOW_RULE_MAX_ADDRESS + (EEPROM_AV_SHIFT * index), sensor->maxSlow);
@@ -445,7 +430,7 @@ void CONFIG_LoadSettingsFromEEPROM(void) {
 	CONFIG_LoadAlarm(0);
 	CONFIG_LoadAlarm(1);
 	CONFIG_LoadPwmDefaultConfigurations();
-	for (int i=0; i<CONFIG_NUMBER_OF_AVS; i++) {
+	for (int i=0; i < NUMBER_OF_AVS; i++) {
 		CONFIG_LoadAvSensor(i);
 	}
 	for (int i=0; i<CONFIG_TRIGS_COUNT; i++) {

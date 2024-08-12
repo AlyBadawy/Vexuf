@@ -38,22 +38,22 @@ void Indicators_setStatus(Indicator ind, IndicatorStatus status) {
     if (ind < IndError || ind > IndAv3 || status > 0b11) {
         return; // Invalid indicator or status
     }
-
+    // Return if current status equals new status
+    if (((indicatorsStatus >> (ind * 2)) & 0b11) == (status << (ind * 2))) {
+    	return;
+    }
     // Buzzer can only be on, off, or slow. Not fast
     if (ind == IndBuzzer && status == IndFAST) {
     	status = IndSLOW;
     }
-
     // Special handling for mutual exclusivity
     if ((status != IndOFF) && (ind == IndError || ind == IndWarn || ind == IndInfo)) {
         indicatorsStatus &= ~(0b11 << (IndError * 2)); // Clear ErrorInd
         indicatorsStatus &= ~(0b11 << (IndWarn * 2));  // Clear WarnInd
         indicatorsStatus &= ~(0b11 << (IndInfo * 2));  // Clear InfoInd
     }
-
     // Clear the current status bits for the indicator
     indicatorsStatus &= ~(0b11 << (ind * 2));
-
     // Set the new status
     indicatorsStatus |= (status << (ind * 2));
 

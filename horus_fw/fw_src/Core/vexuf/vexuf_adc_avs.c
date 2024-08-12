@@ -7,54 +7,90 @@
 
 #include "vexuf_adc_avs.h"
 #include "vexuf_helpers.h"
+#include "vexuf_indicators.h"
 
-extern ADC_HandleTypeDef hadc1;
 
-float getVref(uint32_t adcValue) {
-	float value = adcValue;
-	return (VREFINT * ADC_RESOLUTION) / value;
+extern AvSensor avSensors[NUMBER_OF_AVS];
+
+/*
+ * avsBuffer:
+ * 0: VrefValue
+ * 1: CPU raw value
+ * 2: AV1 Raw Value
+ * 3: AV2 Raw Value
+ * 4: AV3 Raw Value
+ */
+uint32_t adcBuffer[5];
+float vref, cpuTempC;
+
+void ADC_getVref(void) {
+	if (adcBuffer[0] == 0) {
+		vref = 0;
+		return;
+	}
+	vref = (VREFINT * ADC_RESOLUTION) / adcBuffer[0];
 }
 
-float getCpuTempC(uint32_t vrefValue, uint32_t adcValue) {
-	float vref = getVref(vrefValue);
-	float temp_sense = (vref/ADC_RESOLUTION) * adcValue;
-	return (((V25 - temp_sense) / CPU_TEMP_AVG_SLOPE) + 25.0);
+void ADC_getCpuTempC(void) {
+	float temp_sense = (vref/ADC_RESOLUTION) * adcBuffer[1];
+	cpuTempC =  (((V25 - temp_sense) / CPU_TEMP_AVG_SLOPE) + 25.0);
 }
 
-float adcToAv(uint32_t vrefValue, uint32_t adcValue) {
-	float vref = getVref(vrefValue);
+float ADC_rawToVoltage(uint32_t adcValue) {
 	float voltage = ((adcValue * vref) / ADC_RESOLUTION) / adcRatio;
-	if (voltage < 0.05) { voltage = 0.0; }
 	return voltage;
 }
 
 // ADCs test
-void testAvs(uint32_t avsBuffer[5]) {
+void ADC_Scan() {
+	ADC_getVref();
+	ADC_getCpuTempC();
 
+	// TODO: handle high CPU temp (and low)
 
-	HAL_ADC_Start_DMA(&hadc1, avsBuffer, 5);
-	HAL_Delay(50);
-	HAL_ADC_Stop_DMA(&hadc1);
+	Indicator ind;
 
-	uint32_t vrefValue = avsBuffer[0];
-	float vrefValueFloat = avsBuffer[0];
+	for (uint8_t i=0; i < NUMBER_OF_AVS; i++) {
+		switch (i) {
+		case 0:
+			ind = IndAv1;
+			break;
+		case 1:
+			ind = IndAv2;
+			break;
+		case 2:
+			ind = IndAv3;
+			break;
+		default:
+			break;
+		}
+		if (avSensors[i].enabled && avSensors[i].indicatorEnabled) {
+			if (avSensors[i].statusSlow && (adcBuffer[2 + i] >= avSensors[i].minSlow && adcBuffer[2 + i] <= avSensors[i].maxSlow)) {
+				Indicators_setStatus(ind, IndSLOW);
+			} else if (avSensors[i].statusFast && (adcBuffer[2 + i] >= avSensors[i].minFast && adcBuffer[2 + i] <= avSensors[i].maxFast)) {
+				Indicators_setStatus(ind, IndFAST);
+			} else if (avSensors[i].statusOn && (adcBuffer[2 + i] >= avSensors[i].minOn && adcBuffer[2 + i] <= avSensors[i].maxOn)) {
+				Indicators_setStatus(ind, IndON);
+			} else {
+				Indicators_setStatus(ind, IndOFF);
+			}
+		} else {
+			Indicators_setStatus(ind, IndOFF);
+		}
+	}
+}
+
+void ADC_Output(void) {
 	printf("\r\n");
 	printf("Testing ADC functionality...\r\n");
-	printf("  VREF: %f - %0.3fV\r\n", vrefValueFloat, getVref(vrefValue));
-	float tempratureValue = avsBuffer[1];
-	float cpuTempC = getCpuTempC(vrefValue, tempratureValue);
-	printf("  Temperature CPU Raw: %0.2f\r\n", tempratureValue);
+	printf("  VREF: %lu - %0.3fV\r\n", adcBuffer[0], vref);
+	printf("  Temperature CPU Raw: %lu\r\n", adcBuffer[1]);
 	printf("  Temperature CPU C: %0.2f\r\n", cpuTempC);
 	printf("  Temperature CPU F: %0.2f\r\n", cToF(cpuTempC));
-	float av1 = avsBuffer[2];
-	float av2 = avsBuffer[3];
-	float av3 = avsBuffer[4];
-	printf("  Av1 Raw: %f\r\n", av1);
-	printf("  Av1 Volt: %0.3fV\r\n", adcToAv(vrefValue, av1));
-	printf("  Av2 Raw: %f\r\n", av2);
-	printf("  Av2 Volt: %0.3fV\r\n", adcToAv(vrefValue, av2));
-	printf("  Av3 Raw: %f\r\n", av3);
-	printf("  Av3 Volt: %0.3fV\r\n", adcToAv(vrefValue, av3));
-
-
+	printf("  Av1 Raw: %lu\r\n", adcBuffer[2]);
+	printf("  Av1 Volt: %0.3fV\r\n", ADC_rawToVoltage(adcBuffer[2]));
+	printf("  Av2 Raw: %lu\r\n", adcBuffer[3]);
+	printf("  Av2 Volt: %0.3fV\r\n", ADC_rawToVoltage(adcBuffer[3]));
+	printf("  Av3 Raw: %lu\r\n", adcBuffer[4]);
+	printf("  Av3 Volt: %0.3fV\r\n", ADC_rawToVoltage(adcBuffer[4]));
 }
