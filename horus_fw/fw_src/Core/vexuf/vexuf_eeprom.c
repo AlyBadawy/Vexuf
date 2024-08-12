@@ -216,9 +216,6 @@ void EEPROM_Test(void) {
 	// Handle the last character (if array size is odd)
 	readData[24] = readBuffer[12] & 0xFF;
 
-	// Null-terminate the readData string
-	readData[25] = '\0';
-
 	// Print the read data
 	printf("Read Data: %s\r\n", readData);
 }

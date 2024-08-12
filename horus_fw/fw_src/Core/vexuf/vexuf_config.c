@@ -64,7 +64,6 @@ void CONFIG_ReadSerialNumber(char serialNumberBuffer[25]){
 		serialNumberBuffer[2 * i + 1] = (buffer[i] >> 8) & 0xFF;
 	}
 	serialNumberBuffer[24] = buffer[12] & 0xFF;
-	serialNumberBuffer[25] = '\0';
 }
 void CONFIG_WriteSerialNumber(void){
 	uint16_t buffer[EEPROM_SERIAL_NUMBER_LENGTH] = {0};
@@ -93,7 +92,6 @@ void CONFIG_LoadCallSign(void) {
 		callsign[2 * i] = buffer[i] & 0xFF;
 		callsign[2 * i + 1] = (buffer[i] >> 8) & 0xFF;
 	}
-	callsign[10] = '\0';
 }
 void CONFIG_SetCallSign(char newCallSign[EEPROM_CALLSIGN_LENGTH]) {
 	strcpy(callsign, newCallSign);
@@ -106,7 +104,7 @@ void CONFIG_SetCallSign(char newCallSign[EEPROM_CALLSIGN_LENGTH]) {
 
 void CONFIG_LoadSerialInterface(void) {
 	uint16_t config = EEPROM_Read(EEPROM_SERIAL_INTERFACE_ADDRESS);
-	serialInterface = *(SerialConfiguration *)&config;
+	memcpy(&serialInterface, &config, sizeof(serialInterface));
 
 }
 void CONFIG_SetSerialInterface(SerialConfiguration *newSerialInterface) {
@@ -116,7 +114,8 @@ void CONFIG_SetSerialInterface(SerialConfiguration *newSerialInterface) {
 	serialInterface.tnc_enabled = newSerialInterface->tnc_enabled;
 	serialInterface.tnc__baud = newSerialInterface->tnc__baud;
 
-	uint16_t data = *(uint16_t *)&serialInterface; // Convert struct to uint16_t
+	uint16_t data;
+	memcpy(&data, &serialInterface, sizeof(data));
 	EEPROM_Write(EEPROM_SERIAL_INTERFACE_ADDRESS, data);
 }
 void CONFIG_LoadLcdConfig(void) {
@@ -152,7 +151,7 @@ void CONFIG_SetSpiType(SpiType newSpiType){
 
 void CONFIG_LoadOutputs(void) {
 	uint16_t config = EEPROM_Read(EEPROM_OUTPUT_ADDRESS);
-	outputConfig = *(OutputConfiguration *)&config;
+	memcpy(&outputConfig, &config, sizeof(outputConfig));
 
 }
 void CONFIG_SetOutputs(OutputConfiguration *newOutputConf) {
@@ -167,14 +166,14 @@ void CONFIG_SetOutputs(OutputConfiguration *newOutputConf) {
 	outputConfig.log_warn_to_sd = newOutputConf->log_warn_to_sd;
 	outputConfig.log_error_to_sd = newOutputConf->log_error_to_sd;
 
-
-	uint16_t data = *(uint16_t *)&outputConfig; // Convert struct to uint16_t
+	uint16_t data;
+	memcpy(&data, &outputConfig, sizeof(data));
 	EEPROM_Write(EEPROM_OUTPUT_ADDRESS, data);
 }
 
 void CONFIG_LoadActuatorsDefault(void) {
 	uint16_t defaults = EEPROM_Read(EEPROM_ACTUATORS_DEFAULT_ADDRESS);
-	actuatorsDefaults = *(ActuatorsValues *)&defaults;
+	memcpy(&actuatorsDefaults, &defaults, sizeof(actuatorsDefaults));
 }
 void CONFIG_SetActuatorsDefault(ActuatorsValues *newActuatorDefaults) {
 	actuatorsDefaults.act1 = newActuatorDefaults->act1;
@@ -185,7 +184,8 @@ void CONFIG_SetActuatorsDefault(ActuatorsValues *newActuatorDefaults) {
 	actuatorsDefaults.act6 = newActuatorDefaults->act6;
 	actuatorsDefaults.act7 = newActuatorDefaults->act7;
 	actuatorsDefaults.act8 = newActuatorDefaults->act8;
-	uint16_t data =  *(uint16_t *)&actuatorsDefaults;
+	uint16_t data;
+	memcpy(&data, &actuatorsDefaults, sizeof(data));
 	EEPROM_Write(EEPROM_ACTUATORS_DEFAULT_ADDRESS, data);
 }
 
@@ -266,7 +266,9 @@ void CONFIG_SetAvSensor(uint8_t index, AvSensor *sensor) {
 
 void CONFIG_LoadAlarm(uint8_t index) {
 	uint16_t alarmActsValues = EEPROM_Read(EEPROM_ALARM_ACTUATORS_ADDRESS + (EEPROM_ALARM_SHIFT * index));
-	ActuatorsValues alarmActsConfig = *(ActuatorsValues *)&alarmActsValues;
+	ActuatorsValues alarmActsConfig;
+	memcpy(&alarmActsConfig, &alarmActsValues, sizeof(alarmActsConfig));
+
 	alarmConfig[index].actuators.act1 = alarmActsConfig.act1;
 	alarmConfig[index].actuators.act2 = alarmActsConfig.act2;
 	alarmConfig[index].actuators.act3 = alarmActsConfig.act3;
@@ -278,7 +280,8 @@ void CONFIG_LoadAlarm(uint8_t index) {
 
 
 	uint16_t alarmOutputValues = EEPROM_Read(EEPROM_ALARM_OUTPUT_ADDRESS + (EEPROM_ALARM_SHIFT * index));
-	AlarmTrigOutputConfiguration alarmOutputConfig = *(AlarmTrigOutputConfiguration *)&alarmOutputValues;
+	AlarmTrigOutputConfiguration alarmOutputConfig;
+	memcpy(&alarmOutputConfig, &alarmOutputValues, sizeof(alarmOutputConfig));
 	alarmConfig[index].output.buzz = alarmOutputConfig.buzz;
 	alarmConfig[index].output.info = alarmOutputConfig.info;
 	alarmConfig[index].output.pwm1_change = alarmOutputConfig.pwm1_change;
@@ -300,14 +303,17 @@ void CONFIG_SetAlarm(uint8_t index, AlarmConfiguration *newAlarmConfig) {
 	alarmConfig[index].actuators.act6 = newAlarmConfig->actuators.act6;
 	alarmConfig[index].actuators.act7 = newAlarmConfig->actuators.act7;
 	alarmConfig[index].actuators.act8 = newAlarmConfig->actuators.act8;
-	uint16_t data =  *(uint16_t *)&alarmConfig[index].actuators;
+	uint16_t data;
+	memcpy(&data, &alarmConfig[index].actuators, sizeof(data));
+
 	EEPROM_Write(EEPROM_ALARM_ACTUATORS_ADDRESS + (EEPROM_ALARM_SHIFT * index), data);
 
 	alarmConfig[index].output.buzz = newAlarmConfig->output.buzz;
 	alarmConfig[index].output.info = newAlarmConfig->output.info;
 	alarmConfig[index].output.pwm1_change = newAlarmConfig->output.pwm1_change;
 	alarmConfig[index].output.pwm2_change = newAlarmConfig->output.pwm2_change;
-	data =  *(uint16_t *)&alarmConfig[index].output;
+
+	memcpy(&data, &alarmConfig[index].output, sizeof(data));
 	EEPROM_Write(EEPROM_ALARM_OUTPUT_ADDRESS + (EEPROM_ALARM_SHIFT * index), data);
 
 	alarmConfig[index].pwm1 = newAlarmConfig->pwm1;
@@ -346,7 +352,8 @@ void CONFIG_LoadTrigConfiguration(uint8_t index) {
 	triggers[index].max = EEPROM_Read(EEPROM_TRIG_MAX_ADDRESS + (EEPROM_TRIG_SHIFT * index));
 
 	uint16_t trigActsValues = EEPROM_Read(EEPROM_TRIG_ACTUATORS_ADDRESS + (EEPROM_TRIG_SHIFT * index));
-	ActuatorsValues trigActsConfig = *(ActuatorsValues *)&trigActsValues;
+	ActuatorsValues trigActsConfig;
+	memcpy(&trigActsConfig, &trigActsValues, sizeof(trigActsConfig));
 	triggers[index].actuators.act1 = trigActsConfig.act1;
 	triggers[index].actuators.act2 = trigActsConfig.act2;
 	triggers[index].actuators.act3 = trigActsConfig.act3;
@@ -357,7 +364,8 @@ void CONFIG_LoadTrigConfiguration(uint8_t index) {
 	triggers[index].actuators.act8 = trigActsConfig.act8;
 
 	uint16_t trigOutputValues = EEPROM_Read(EEPROM_TRIG_OUTPUT_ADDRESS + (EEPROM_TRIG_SHIFT * index));
-	AlarmTrigOutputConfiguration trigOutputConfig = *(AlarmTrigOutputConfiguration *)&trigOutputValues;
+	AlarmTrigOutputConfiguration trigOutputConfig;
+	memcpy(&trigOutputConfig, &trigOutputValues, sizeof(trigOutputConfig));
 	triggers[index].output.buzz = trigOutputConfig.buzz;
 	triggers[index].output.info = trigOutputConfig.info;
 	triggers[index].output.pwm1_change = trigOutputConfig.pwm1_change;
@@ -392,14 +400,15 @@ void CONFIG_SetTrigConfiguration(uint8_t index, TriggerConfiguration *newTrigCon
 	triggers[index].actuators.act6 = newTrigConfig->actuators.act6;
 	triggers[index].actuators.act7 = newTrigConfig->actuators.act7;
 	triggers[index].actuators.act8 = newTrigConfig->actuators.act8;
-	uint16_t data =  *(uint16_t *)&triggers[index].actuators;
+	uint16_t data;
+	memcpy(&data, &triggers[index].actuators, sizeof(data));
 	EEPROM_Write(EEPROM_TRIG_ACTUATORS_ADDRESS + (EEPROM_ALARM_SHIFT * index), data);
 
 	triggers[index].output.buzz = newTrigConfig->output.buzz;
 	triggers[index].output.info = newTrigConfig->output.info;
 	triggers[index].output.pwm1_change = newTrigConfig->output.pwm1_change;
 	triggers[index].output.pwm2_change = newTrigConfig->output.pwm2_change;
-	data =  *(uint16_t *)&triggers[index].output;
+	memcpy(&data, &triggers[index].output, sizeof(data));
 	EEPROM_Write(EEPROM_TRIG_OUTPUT_ADDRESS + (EEPROM_ALARM_SHIFT * index), data);
 
 	triggers[index].pwm1 = newTrigConfig->pwm1;
@@ -443,62 +452,3 @@ void CONFIG_LoadSettingsFromEEPROM(void) {
 		CONFIG_LoadTrigConfiguration(i);
 	}
 }
-//    EEPROM_ReadMultipleWords(EEPROM_SERIAL_NUMBER_ADDR, (uint16_t*)serialNumber, 13);
-//    EEPROM_ReadMultipleWords(EEPROM_CALLSIGN_ADDR, (uint16_t*)callsign, 5);
-//    EEPROM_ReadMultipleWords(EEPROM_REGISTRATION_NUMBER_ADDR, &registrationNumber, 2);
-//
-//    EEPROM_ReadMultipleWords(EEPROM_V1_ENABLED_ADDR, (uint16_t*)&v1Enabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_V2_ENABLED_ADDR, (uint16_t*)&v2Enabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_V3_ENABLED_ADDR, (uint16_t*)&v3Enabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_V1_LED_ENABLED_ADDR, (uint16_t*)&v1LedEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_V2_LED_ENABLED_ADDR, (uint16_t*)&v2LedEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_V3_LED_ENABLED_ADDR, (uint16_t*)&v3LedEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_SERVO1_ENABLED_ADDR, (uint16_t*)&servo1Enabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_SERVO2_ENABLED_ADDR, (uint16_t*)&servo2Enabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_SPI_ENABLED_ADDR, (uint16_t*)&spiEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_I2C_ENABLED_ADDR, (uint16_t*)&i2cEnabled, 1);
-//
-//    for (int i = 0; i < 8; i++) {
-//        EEPROM_ReadMultipleWords(EEPROM_ACTUATORS_ENABLED_ADDR + i, (uint16_t*)&actuatorsEnabled[i], 1);
-//    }
-//
-//    EEPROM_ReadMultipleWords(EEPROM_TTL_ENABLED_ADDR, (uint16_t*)&ttlEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_TNC_ENABLED_ADDR, (uint16_t*)&tncEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_TTL_INDICATOR_ENABLED_ADDR, (uint16_t*)&ttlIndicatorEnabled, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_BUZZER_ENABLED_ADDR, (uint16_t*)&buzzerEnabled, 1);
-//
-//    EEPROM_ReadMultipleWords(EEPROM_TTL_BAUD_RATE_ADDR, &ttlBaudRate, 1);
-//    EEPROM_ReadMultipleWords(EEPROM_TNC_BAUD_RATE_ADDR, &tncBaudRate, 1);
-//}
-//
-//void CONFIG_SetDefaultSettings(void) {
-//    memset(serialNumber, 0, SERIAL_NUMBER_LENGTH);
-//    memset(callsign, 0, CALLSIGN_LENGTH);
-//    registrationNumber = 0;
-//
-//    v1Enabled = false;
-//    v2Enabled = false;
-//    v3Enabled = false;
-//    v1LedEnabled = false;
-//    v2LedEnabled = false;
-//    v3LedEnabled = false;
-//    servo1Enabled = false;
-//    servo2Enabled = false;
-//    spiEnabled = false;
-//    i2cEnabled = false;
-//
-//    for (int i = 0; i < 8; i++) {
-//        actuatorsEnabled[i] = false;
-//    }
-//
-//    ttlEnabled = false;
-//    tncEnabled = false;
-//    ttlIndicatorEnabled = false;
-//    buzzerEnabled = false;
-//
-//    ttlBaudRate = 8;  // Default baud rate
-//    tncBaudRate = 2;  // Default baud rate
-//}
-//
-//
-
