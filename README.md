@@ -26,7 +26,7 @@ The "Horus" device is designed to support both Emergency Operations Centers (EOC
 
 Horus provides detailed insights into power supply statuses and environmental conditions, ensuring operational continuity and situational awareness. Additionally, the device logs data to an SD card for future retrieval and analysis. The VexUF:Horus supports communication with a computer or a stand-alone TNC, utilizing the APRS protocol to transmit vital information to remote locations. This ensures better coordination and response during emergencies and day-to-day operations for amateur radio enthusiasts.
 
-You can find the firmware and detailed documentation for the Horus device in the [Horus folder](./horus).
+You can find the firmware and detailed documentation for the Horus device in the [Horus folder](./horus_fw).
 
 ### Seth
 
