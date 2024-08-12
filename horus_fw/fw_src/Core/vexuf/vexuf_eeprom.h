@@ -59,9 +59,9 @@
 #define EEPROM_AV_SHIFT                                     16
 
 
-#define EEPROM_TRIG_ENABLE_ADDRESS                          0x0070
-#define EEPROM_TRIG_MIN_ADDRESS                             0x0071
-#define EEPROM_TRIG_MAX_ADDRESS                             0x0072
+#define EEPROM_TRIG_STATUS_ADDRESS                          0x0070
+#define EEPROM_TRIG_FROM_VALUE_ADDRESS                      0x0071
+#define EEPROM_TRIG_TO_VALUE_ADDRESS                        0x0072
 #define EEPROM_TRIG_TEST_ADDRESS                            0x0073
 #define EEPROM_TRIG_ACTUATORS_ADDRESS                       0x0074
 #define EEPROM_TRIG_OUTPUT_ADDRESS                          0x0075

@@ -52,19 +52,15 @@ void VexUF_Init(void) {
 
 	CONFIG_LoadSettingsFromEEPROM();
 
- 	HAL_ADC_Start_DMA(&hadc1, adcBuffer, 5);
-	HAL_Delay(50);
+
 
 	HAL_Delay(500);
 
-	AvSensor sens;
-	sens.enabled = true;
-	sens.indicatorEnabled = true;
-	sens.minFast = 300;
-	sens.maxFast = 400;
-	sens.statusFast = true;
-	CONFIG_SetAvSensor(2, &sens);
+	ACTUATORS_Test(); // TODO: remove before release
 
+
+ 	HAL_ADC_Start_DMA(&hadc1, adcBuffer, 5);
+	HAL_Delay(20);
 	TIMERS_Start();
 
 
@@ -72,10 +68,12 @@ void VexUF_Init(void) {
 }
 
 void VEXUF_run(void) {
-
+// 	HAL_ADC_Start_DMA(&hadc1, adcBuffer, 5);
+//	HAL_Delay(20);
+//	HAL_ADC_Stop_DMA(&hadc1);
 	ADC_Scan();
 	if (timerTicked) {
-		TRIGGERS_run();
+		TRIGGERS_runAll();
 		timerTicked = false;
 	}
 }

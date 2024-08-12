@@ -333,10 +333,10 @@ void CONFIG_SetPwmDefaultConfigurations(PwmConfiguration *newPwmDefaultConfig) {
 }
 
 void CONFIG_LoadTrigConfiguration(uint8_t index) {
-	triggers[index].enabled = EEPROM_Read(EEPROM_TRIG_ENABLE_ADDRESS + (EEPROM_TRIG_SHIFT * index));
+	triggers[index].status = EEPROM_Read(EEPROM_TRIG_STATUS_ADDRESS + (EEPROM_TRIG_SHIFT * index));
 	triggers[index].test = EEPROM_Read(EEPROM_TRIG_TEST_ADDRESS + (EEPROM_TRIG_SHIFT * index));
-	triggers[index].min = EEPROM_Read(EEPROM_TRIG_MIN_ADDRESS + (EEPROM_TRIG_SHIFT * index));
-	triggers[index].max = EEPROM_Read(EEPROM_TRIG_MAX_ADDRESS + (EEPROM_TRIG_SHIFT * index));
+	triggers[index].fromValue = EEPROM_Read(EEPROM_TRIG_FROM_VALUE_ADDRESS + (EEPROM_TRIG_SHIFT * index));
+	triggers[index].toValue = EEPROM_Read(EEPROM_TRIG_TO_VALUE_ADDRESS + (EEPROM_TRIG_SHIFT * index));
 
 	uint16_t trigActsValues = EEPROM_Read(EEPROM_TRIG_ACTUATORS_ADDRESS + (EEPROM_TRIG_SHIFT * index));
 	ActuatorsValues trigActsConfig;
@@ -370,14 +370,14 @@ void CONFIG_LoadTrigConfiguration(uint8_t index) {
 	triggers[index].tnc2Message = EEPROM_Read(EEPROM_TRIG_TNC2_ADDRESS + (EEPROM_TRIG_SHIFT * index) + 2);
 }
 void CONFIG_SetTrigConfiguration(uint8_t index, TriggerConfiguration *newTrigConfig){
-	triggers[index].enabled = newTrigConfig->enabled;
-	EEPROM_Write(EEPROM_TRIG_ENABLE_ADDRESS + (EEPROM_TRIG_SHIFT * index), triggers[index].enabled);
+	triggers[index].status = newTrigConfig->status;
+	EEPROM_Write(EEPROM_TRIG_STATUS_ADDRESS + (EEPROM_TRIG_SHIFT * index), triggers[index].status);
 	triggers[index].test = newTrigConfig->test;
 	EEPROM_Write(EEPROM_TRIG_TEST_ADDRESS + (EEPROM_TRIG_SHIFT * index), triggers[index].test);
-	triggers[index].min = newTrigConfig->min;
-	EEPROM_Write(EEPROM_TRIG_MIN_ADDRESS + (EEPROM_TRIG_SHIFT * index), triggers[index].test);
-	triggers[index].max = newTrigConfig->max;
-	EEPROM_Write(EEPROM_TRIG_MAX_ADDRESS + (EEPROM_TRIG_SHIFT * index), triggers[index].test);
+	triggers[index].fromValue = newTrigConfig->fromValue;
+	EEPROM_Write(EEPROM_TRIG_FROM_VALUE_ADDRESS + (EEPROM_TRIG_SHIFT * index), triggers[index].fromValue);
+	triggers[index].toValue = newTrigConfig->toValue;
+	EEPROM_Write(EEPROM_TRIG_TO_VALUE_ADDRESS + (EEPROM_TRIG_SHIFT * index), triggers[index].toValue);
 
 	triggers[index].actuators.act1 = newTrigConfig->actuators.act1;
 	triggers[index].actuators.act2 = newTrigConfig->actuators.act2;

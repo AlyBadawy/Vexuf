@@ -18,13 +18,13 @@ typedef enum {ActOff = 0, ActOn = 1, ActUnchanged = 2} ActStatus;
 // Define an enum for the shift register pins
 typedef enum {
     ACT_PIN_A1 = 0,
-    ACT_PIN_A2,
-    ACT_PIN_A3,
-    ACT_PIN_A4,
-    ACT_PIN_A5,
-    ACT_PIN_A6,
-    ACT_PIN_A7,
-    ACT_PIN_A8
+    ACT_PIN_A2 = 1,
+    ACT_PIN_A3 = 2,
+    ACT_PIN_A4 = 3,
+    ACT_PIN_A5 = 4,
+    ACT_PIN_A6 = 5,
+    ACT_PIN_A7 = 6,
+    ACT_PIN_A8 = 7
 } ActuatorPin;
 
 typedef struct {
@@ -39,12 +39,13 @@ typedef struct {
 } ActuatorsValues;
 
 // Function prototypes
-void Actuators_Write(uint8_t data);
-void Actuators_SetPin(ActuatorPin pin);
-void Actuators_ResetPin(ActuatorPin pin);
-void Actuators_Update(void);
-void Actuators_Lights(GPIO_PinState state);
-void Actuators_Test(void);
+void ACTUATORS_setPin(ActuatorPin pin);
+void ACTUATORS_resetPin(ActuatorPin pin);
+void ACTUATORS_updateShiftReg(void);
+void ACTUATORS_lights(GPIO_PinState state);
+void ACTUATORS_trigegr(ActuatorsValues values);
+
+void ACTUATORS_Test(void);
 
 #endif /* INC_VEXUF_ACTUATORS_H_ */
 
