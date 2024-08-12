@@ -8,7 +8,7 @@
 #ifndef INC_VEXUF_ADC_AVS_H_
 #define INC_VEXUF_ADC_AVS_H_
 
-#include "main.h"
+#include "vexuf.h"
 
 #define VREFINT      		1.22
 #define ADC_RESOLUTION    	4096	// 12-bit ADC resolution

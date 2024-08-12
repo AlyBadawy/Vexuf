@@ -10,6 +10,8 @@
 #include "vexuf_helpers.h"
 #include "vexuf_eeprom.h"
 #include "vexuf_adc_avs.h"
+#include "vexuf_triggers.h"
+#include "vexuf_real_time.h"
 
 extern char serialNumber[SERIAL_NUMBER_LENGTH];
 extern uint32_t registrationNumber;
@@ -23,7 +25,7 @@ extern ActuatorsValues actuatorsDefaults;
 extern AlarmConfiguration alarmConfig[2];
 extern PwmConfiguration pwmDefaultConfig;
 
-extern TriggerConfiguration triggers[CONFIG_TRIGS_COUNT];
+extern TriggerConfiguration triggers[TRIGS_COUNT];
 extern AvSensor avSensors[NUMBER_OF_AVS];
 
 bool isConfigured;
@@ -433,7 +435,7 @@ void CONFIG_LoadSettingsFromEEPROM(void) {
 	for (int i=0; i < NUMBER_OF_AVS; i++) {
 		CONFIG_LoadAvSensor(i);
 	}
-	for (int i=0; i<CONFIG_TRIGS_COUNT; i++) {
+	for (int i=0; i < TRIGS_COUNT; i++) {
 		CONFIG_LoadTrigConfiguration(i);
 	}
 }

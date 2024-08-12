@@ -8,6 +8,17 @@
 
 #include "vexuf_eeprom.h"
 
+#define EEPROM_CMD_READ  		0x1800
+#define EEPROM_CMD_WRITE 		0x1400
+#define EEPROM_CMD_ERASE 		0x1C00
+#define EEPROM_CMD_WREN  		0x1300
+#define EEPROM_CMD_WRDI  		0x1000
+#define EEPROM_CMD_ERASE_ALL 	0x1200
+
+#define MEM_DelayNUM			2
+#define MEM_DeLay()				for(uint16_t i=0;i<MEM_DelayNUM;i++)asm("NOP")
+#define MEM_Timeout				1000
+
 
 int16_t MEMrData[1];
 int16_t MEMsData[1];

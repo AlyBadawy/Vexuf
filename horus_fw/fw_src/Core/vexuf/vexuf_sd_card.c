@@ -5,10 +5,9 @@
  *      Author: Aly Badawy
  */
 
-#include "main.h"
-#include "string.h"
-#include "vexuf_helpers.h"
+
 #include "vexuf_sd_card.h"
+#include "vexuf_helpers.h"
 #include "vexuf_indicators.h"
 #include "vexuf_timers.h"
 

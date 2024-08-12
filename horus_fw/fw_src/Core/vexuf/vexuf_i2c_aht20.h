@@ -8,7 +8,7 @@
 #ifndef INC_VEXUF_I2C_AHT20_H_
 #define INC_VEXUF_I2C_AHT20_H_
 
-#include "main.h"
+#include "vexuf.h"
 
 HAL_StatusTypeDef AHT20_Init(I2C_HandleTypeDef *hi2c);
 HAL_StatusTypeDef AHT20_ReadTemperatureHumidity(I2C_HandleTypeDef *hi2c, float *temperature, float *humidity);

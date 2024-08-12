@@ -8,17 +8,21 @@
 #ifndef VEXUF_VEXUF_HELPERS_H_
 #define VEXUF_VEXUF_HELPERS_H_
 
+#include "vexuf.h"
+#include "vexuf_actuators.h"
+#include "vexuf_real_time.h"
+
 #define SERIAL_NUMBER_LENGTH		25
 #define CALLSIGN_LENGTH				10
 
 
-typedef enum {Av1, Av2, Av3, InternalTemp, ExternalTemp} TriggerSource;
-typedef enum {lessThan, lessThanOrEqual, Equal, GreaterThanOrEqual, GreaterThan, NotEqual} CompareTest;
+
+
 typedef enum {Baud300, Baud600, Baud1200, Baud4800, Baud9600, Baud19200, Baud57600, Baud115200} BaudRate;
 typedef enum {NoLCD = 0, LCD2004 = 1, LCD1602 = 2} LcdType;
 typedef enum {NoI2C = 0, AHT20 = 1, AHT21 = 2} I2CType;
 typedef enum {NoSpi = 0, BLUETOOTH} SpiType;
-typedef enum {ActOff = 0, ActOn = 1, ActUnchanged = 2} ActStatus;
+
 
 
 typedef struct {
@@ -57,55 +61,6 @@ typedef struct {
 	uint16_t reserved:6;						// 6 bit
 
 } OutputConfiguration;
-
-
-typedef struct {
-	uint16_t buzz: 1;							// 1 bit
-	uint16_t info: 1;							// 1 bit
-	uint16_t pwm1_change: 1;					// 1 bit
-	uint16_t pwm2_change: 1;					// 1 bit
-	uint16_t reserver: 12;						// 14 bit padding
-
-} AlarmTrigOutputConfiguration;
-
-typedef struct {
-	uint16_t act1:2;
-	uint16_t act2:2;
-	uint16_t act3:2;
-	uint16_t act4:2;
-	uint16_t act5:2;
-	uint16_t act6:2;
-	uint16_t act7:2;
-	uint16_t act8:2;
-} ActuatorsValues;
-
-typedef struct {
-    uint16_t enabled : 1;           			// 1 bit
-    CompareTest test:3;							// 3 bits, enough to hold 6 choices
-    uint16_t reserved : 12;     			    // 12 bits (padding to make 16 bits total)
-    uint16_t min;                   			// 16 bits
-    uint16_t max;                   			// 16 bits
-    ActuatorsValues actuators;
-    AlarmTrigOutputConfiguration output;
-    uint16_t pwm1;                  			// 16 bits, 0xffff = no change
-    uint16_t pwm2;                  			// 16 bits, 0xffff = no change
-    uint16_t tnc1Enabled;
-	uint16_t tnc1Message;
-	uint16_t tnc1Path;
-	uint16_t tnc2Enabled;
-	uint16_t tnc2Message;
-	uint16_t tnc2Path;
-} TriggerConfiguration;
-
-typedef struct {
-    ActuatorsValues actuators;
-    AlarmTrigOutputConfiguration output;
-    uint16_t pwm1;								// 16 bits, 0xffff = no change
-    uint16_t pwm2;								// 16 bits, 0xffff = no change
-    uint16_t tncEnabled;
-    uint16_t tncMessage;
-    uint16_t tncPath;
-} AlarmConfiguration;
 
 typedef struct {
 	uint16_t pwm1Enabled;

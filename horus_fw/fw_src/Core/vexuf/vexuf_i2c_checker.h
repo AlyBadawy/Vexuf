@@ -8,7 +8,7 @@
 #ifndef INC_VEXUF_I2C_CHECKER_H_
 #define INC_VEXUF_I2C_CHECKER_H_
 
-#include "main.h"
+#include "vexuf.h"
 
 
 void I2C_Scan(I2C_HandleTypeDef *hi2c, uint8_t *foundDevices, uint8_t *foundDevicesCount);

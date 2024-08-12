@@ -6,7 +6,6 @@
  */
 
 
-#include "../inc/main.h"
 #include "vexuf.h"
 #include "vexuf_helpers.h"
 #include "vexuf_config.h"
@@ -14,6 +13,7 @@
 #include "vexuf_indicators.h"
 #include "vexuf_timers.h"
 #include "vexuf_adc_avs.h"
+#include "vexuf_triggers.h"
 
 
 
@@ -33,7 +33,7 @@ ActuatorsValues actuatorsDefaults;
 AlarmConfiguration alarmConfig[2];
 PwmConfiguration pwmDefaultConfig;
 
-TriggerConfiguration triggers[CONFIG_TRIGS_COUNT];
+TriggerConfiguration triggers[TRIGS_COUNT];
 AvSensor avSensors[NUMBER_OF_AVS];
 
 bool timerTicked = false;
@@ -43,8 +43,6 @@ void VexUF_Init(void) {
 	Indicators_setStatus(IndWarn, IndON);
 
 	VexUF_GenerateSerialNumber();
-
-	CONFIG_SetIsConfigured(); // TODO: Remove this before release!
 
 	// Check if the EEPROM has configuration, otherwise halt!
 	if (!CONFIG_IsConfigured()) CONFIG_HandleNoConfig();
@@ -77,6 +75,7 @@ void VEXUF_run(void) {
 
 	ADC_Scan();
 	if (timerTicked) {
+		TRIGGERS_run();
 		timerTicked = false;
 	}
 }

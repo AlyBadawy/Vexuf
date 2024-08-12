@@ -5,7 +5,6 @@
  *      Author: Aly Badawy
  */
 
-#include "main.h"
 #include "vexuf_helpers.h"
 
 extern I2C_HandleTypeDef hi2c1;

@@ -8,7 +8,7 @@
 #ifndef INC_VEXUF_SD_CARD_H_
 #define INC_VEXUF_SD_CARD_H_
 
-#include "main.h"
+#include "vexuf.h"
 #include "fatfs.h"
 
 

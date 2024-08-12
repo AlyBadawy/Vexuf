@@ -8,7 +8,7 @@
 #ifndef VEXUF_VEXUF_TIMERS_H_
 #define VEXUF_VEXUF_TIMERS_H_
 
-#include "../inc/main.h"
+#include "vexuf.h"
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 

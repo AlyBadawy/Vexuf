@@ -8,7 +8,7 @@
 #ifndef INC_VEXUF_INDICATORS_H_
 #define INC_VEXUF_INDICATORS_H_
 
-#include "main.h"
+#include "vexuf.h"
 
 typedef enum {
     IndOFF = 0b00,
