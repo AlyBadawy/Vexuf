@@ -18,6 +18,7 @@ static IndicatorPin indicatorPins[] = {
     {ErrorInd_GPIO_Port, ErrorInd_Pin}, // ErrorInd
     {WarnInd_GPIO_Port, WarnInd_Pin}, // WarnInd
     {InfoInd_GPIO_Port, InfoInd_Pin}, // InfoInd
+	{SdioInd_GPIO_Port, SdioInd_Pin}, // SDIOInd
     {Buzzer_GPIO_Port, Buzzer_Pin}, // Buzzer
     {Av1Indicator_GPIO_Port, Av1Indicator_Pin}, // Av1Ind
     {Av2Indicator_GPIO_Port, Av2Indicator_Pin}, // Av2Ind

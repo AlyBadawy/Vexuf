@@ -37,6 +37,8 @@ void VexUF_Init(void) {
 
 	VexUF_GenerateSerialNumber();
 
+	CONFIG_SetIsConfigured();
+
 	// Check if the EEPROM has configuration, otherwise halt!
 	if (CONFIG_IsConfigured()) {
 		CONFIG_LoadSettingsFromEEPROM();

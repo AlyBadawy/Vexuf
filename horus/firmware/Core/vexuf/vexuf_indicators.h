@@ -21,8 +21,8 @@ typedef enum {
     IndError = 0,
 	IndWarn = 1,
 	IndInfo = 2,
-	IndBuzzer = 3,
-	IndSdio = 4,
+	IndSdio = 3,
+	IndBuzzer = 4,
 	IndAv1 = 5,
 	IndAv2 = 6,
 	IndAv3 = 7

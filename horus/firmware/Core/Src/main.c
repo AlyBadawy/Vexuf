@@ -134,13 +134,6 @@ int main(void)
 
   VexUF_Init();
 
-
-//  // Start TIM4, TIM9, TIM5 in interrupt mode
-//  HAL_TIM_Base_Start_IT(&htim4);
-//  HAL_TIM_Base_Start_IT(&htim9);
-//  HAL_TIM_Base_Start_IT(&htim5);
-
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
