@@ -10,25 +10,20 @@
 
 #include "vexuf.h"
 #include "vexuf_actuators.h"
-
-typedef struct {
-	uint16_t buzz: 1;							// 1 bit
-	uint16_t info: 1;							// 1 bit
-	uint16_t pwm1_change: 1;					// 1 bit
-	uint16_t pwm2_change: 1;					// 1 bit
-	uint16_t reserver: 12;						// 14 bit padding
-
-} AlarmTrigOutputConfiguration;
+#include "vexuf_output.h"
+#include "vexuf_output.h"
 
 
 typedef struct {
     ActuatorsValues actuators;
-    AlarmTrigOutputConfiguration output;
+    AlarmOrTrigOutput output;
     uint16_t pwm1;								// 16 bits, 0xffff = no change
     uint16_t pwm2;								// 16 bits, 0xffff = no change
-    uint16_t tncEnabled;
-    uint16_t tncMessage;
-    uint16_t tncPath;
+    uint16_t tncEnabled: 1;
+    uint16_t tncMessage: 4;
+    uint16_t tncPath: 3;
+    uint16_t reserved: 8;
+
 } AlarmConfiguration;
 
 #endif /* VEXUF_VEXUF_REAL_TIME_H_ */

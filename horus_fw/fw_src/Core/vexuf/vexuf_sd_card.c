@@ -10,6 +10,7 @@
 #include "vexuf_helpers.h"
 #include "vexuf_indicators.h"
 #include "vexuf_timers.h"
+#include "vexuf_output.h"
 
 extern OutputConfiguration outputConfig;
 
@@ -28,6 +29,7 @@ DWORD FreeClusters;
 
 void SDCard_HandleError(void) {
 	if (!outputConfig.error_on_no_sd) return;
+	OUTPUT_buzzOnError();
 	Indicators_setStatus(IndWarn, IndOFF);
 
 	TIMERS_Stop();

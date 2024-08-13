@@ -15,11 +15,13 @@
 #include "vexuf_adc_avs.h"
 #include "vexuf_triggers.h"
 #include "vexuf_pwm.h"
+#include "vexuf_output.h"
 
 
 
 extern ADC_HandleTypeDef hadc1;
 extern uint32_t adcBuffer[5];
+
 
 
 char serialNumber[SERIAL_NUMBER_LENGTH];
@@ -66,12 +68,9 @@ void VexUF_Init(void) {
 	HAL_Delay(20);
 	TIMERS_Start();
 
-	if (outputConfig.buzzer_1s_enabled) {
-		Indicators_setStatus(IndBuzzer, IndON);
-		HAL_Delay(1000);
-		Indicators_setStatus(IndBuzzer, IndOFF);
-	}
+	OUTPUT_BuzzOnStartUp();
 	Indicators_setStatus(IndWarn, IndOFF);
+
 }
 
 void VEXUF_run(void) {

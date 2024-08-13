@@ -36,6 +36,7 @@
 
 #include "../vexuf/vexuf.h"
 #include "../vexuf/vexuf_timers.h"
+#include "../vexuf/vexuf_output.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -131,7 +132,7 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_TIM10_Init();
   MX_TIM11_Init();
-  /* USER CODE BEGIN 2 */
+  /* USER CODE BEGIN 2 *
 
   VexUF_Init();
 
@@ -240,6 +241,7 @@ void Error_Handler(void)
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
+  OUTPUT_buzzOnError();
   while (1)
   {
   }

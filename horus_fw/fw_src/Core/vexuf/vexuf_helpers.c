@@ -22,6 +22,10 @@ float fToC(float f) {
 	return (f - 32.0) * (5.0 / 9.0);
 }
 
+uint16_t getSerialBytes(void) {
+	return *(uint16_t*)0x08007FF0;
+}
+
 void base32_encode(const uint8_t *data, size_t length, char *output) {
     int index, bitbuffer, bits_in_buffer;
     size_t i;
