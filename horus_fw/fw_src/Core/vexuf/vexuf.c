@@ -23,6 +23,7 @@ extern ADC_HandleTypeDef hadc1;
 extern uint32_t adcBuffer[5];
 
 
+
 char serialNumber[SERIAL_NUMBER_LENGTH];
 uint32_t registrationNumber;
 char callsign[CALLSIGN_LENGTH];
@@ -69,6 +70,7 @@ void VexUF_Init(void) {
 
 	OUTPUT_BuzzOnStartUp();
 	Indicators_setStatus(IndWarn, IndOFF);
+
 }
 
 void VEXUF_run(void) {

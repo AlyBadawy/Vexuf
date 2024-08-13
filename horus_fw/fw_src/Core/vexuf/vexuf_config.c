@@ -51,6 +51,7 @@ void CONFIG_SetIsConfigured(void) {
 }
 void CONFIG_HandleNoConfig(void) {
 	Indicators_setStatus(IndWarn, IndOFF);
+	OUTPUT_buzzOnError();
 	while (!isConfigured) {
 		Indicators_setStatus(IndError, IndOFF);
 		Indicators_setStatus(IndWarn, IndON);

@@ -29,6 +29,7 @@ DWORD FreeClusters;
 
 void SDCard_HandleError(void) {
 	if (!outputConfig.error_on_no_sd) return;
+	OUTPUT_buzzOnError();
 	Indicators_setStatus(IndWarn, IndOFF);
 
 	TIMERS_Stop();
