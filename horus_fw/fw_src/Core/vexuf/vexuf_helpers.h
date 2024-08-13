@@ -62,12 +62,7 @@ typedef struct {
 
 } OutputConfiguration;
 
-typedef struct {
-	uint16_t pwm1Enabled;
-	uint16_t pwm1Value;
-	uint16_t pwm2Enabled;
-	uint16_t pwm2Value;
-} PwmConfiguration;
+
 
 
 

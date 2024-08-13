@@ -12,6 +12,7 @@
 #include "vexuf_adc_avs.h"
 #include "vexuf_triggers.h"
 #include "vexuf_real_time.h"
+#include "vexuf_pwm.h"
 
 extern char serialNumber[SERIAL_NUMBER_LENGTH];
 extern uint32_t registrationNumber;
@@ -23,7 +24,7 @@ extern I2CConfiguration i2cConfig;
 extern OutputConfiguration outputConfig;
 extern ActuatorsValues actuatorsDefaults;
 extern AlarmConfiguration alarmConfig[2];
-extern PwmConfiguration pwmDefaultConfig;
+extern PwmConfiguration pwmConfig;
 
 extern TriggerConfiguration triggers[TRIGS_COUNT];
 extern AvSensor avSensors[NUMBER_OF_AVS];
@@ -316,20 +317,20 @@ void CONFIG_SetAlarm(uint8_t index, AlarmConfiguration *newAlarmConfig) {
 }
 
 void CONFIG_LoadPwmDefaultConfigurations(void) {
-	pwmDefaultConfig.pwm1Enabled = EEPROM_Read(EEPROM_PWM1_ENABLED_ADDRESS);
-	pwmDefaultConfig.pwm1Value = EEPROM_Read(EEPROM_PWM1_DEFAULT_ADDRESS);
-	pwmDefaultConfig.pwm2Enabled = EEPROM_Read(EEPROM_PWM2_ENABLED_ADDRESS);
-	pwmDefaultConfig.pwm2Value = EEPROM_Read(EEPROM_PWM2_DEFAULT_ADDRESS);
+	pwmConfig.pwm1Enabled = EEPROM_Read(EEPROM_PWM1_ENABLED_ADDRESS) == 1 ? 1 : 0;
+	pwmConfig.pwm1Value = EEPROM_Read(EEPROM_PWM1_DEFAULT_ADDRESS);
+	pwmConfig.pwm2Enabled = EEPROM_Read(EEPROM_PWM2_ENABLED_ADDRESS) == 1 ? 1 : 0;
+	pwmConfig.pwm2Value = EEPROM_Read(EEPROM_PWM2_DEFAULT_ADDRESS);
 }
-void CONFIG_SetPwmDefaultConfigurations(PwmConfiguration *newPwmDefaultConfig) {
-	pwmDefaultConfig.pwm1Enabled = newPwmDefaultConfig->pwm1Enabled;
-	pwmDefaultConfig.pwm1Value = newPwmDefaultConfig->pwm1Value;
-	pwmDefaultConfig.pwm2Enabled = newPwmDefaultConfig->pwm2Enabled;
-	pwmDefaultConfig.pwm2Value = newPwmDefaultConfig->pwm2Value;
-	EEPROM_Write(EEPROM_PWM1_ENABLED_ADDRESS, pwmDefaultConfig.pwm1Enabled);
-	EEPROM_Write(EEPROM_PWM1_DEFAULT_ADDRESS, pwmDefaultConfig.pwm1Value);
-	EEPROM_Write(EEPROM_PWM2_ENABLED_ADDRESS, pwmDefaultConfig.pwm2Enabled);
-	EEPROM_Write(EEPROM_PWM2_DEFAULT_ADDRESS, pwmDefaultConfig.pwm2Value);
+void CONFIG_SetPwmDefaultConfigurations(PwmConfiguration *newPwmConfig) {
+	pwmConfig.pwm1Enabled = newPwmConfig->pwm1Enabled == 1 ? 1 : 0;
+	pwmConfig.pwm1Value = newPwmConfig->pwm1Value;
+	pwmConfig.pwm2Enabled = newPwmConfig->pwm2Enabled == 1 ? 1 : 0;;
+	pwmConfig.pwm2Value = newPwmConfig->pwm2Value;
+	EEPROM_Write(EEPROM_PWM1_ENABLED_ADDRESS, pwmConfig.pwm1Enabled);
+	EEPROM_Write(EEPROM_PWM1_DEFAULT_ADDRESS, pwmConfig.pwm1Value);
+	EEPROM_Write(EEPROM_PWM2_ENABLED_ADDRESS, pwmConfig.pwm2Enabled);
+	EEPROM_Write(EEPROM_PWM2_DEFAULT_ADDRESS, pwmConfig.pwm2Value);
 }
 
 void CONFIG_LoadTrigConfiguration(uint8_t index) {

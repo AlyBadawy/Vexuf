@@ -12,7 +12,7 @@
 #include "vexuf_real_time.h"
 #include "vexuf_actuators.h"
 
-#define  TRIGS_COUNT				25
+#define  TRIGS_COUNT		25
 
 
 typedef enum {

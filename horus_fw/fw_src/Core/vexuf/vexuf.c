@@ -14,6 +14,7 @@
 #include "vexuf_timers.h"
 #include "vexuf_adc_avs.h"
 #include "vexuf_triggers.h"
+#include "vexuf_pwm.h"
 
 
 
@@ -31,7 +32,7 @@ I2CConfiguration i2cConfig;
 OutputConfiguration outputConfig;
 ActuatorsValues actuatorsDefaults;
 AlarmConfiguration alarmConfig[2];
-PwmConfiguration pwmDefaultConfig;
+PwmConfiguration pwmConfig;
 
 TriggerConfiguration triggers[TRIGS_COUNT];
 AvSensor avSensors[NUMBER_OF_AVS];
@@ -52,11 +53,13 @@ void VexUF_Init(void) {
 
 	CONFIG_LoadSettingsFromEEPROM();
 
-
+	PWM_init();
 
 	HAL_Delay(500);
 
 	ACTUATORS_Test(); // TODO: remove before release
+
+
 
 
  	HAL_ADC_Start_DMA(&hadc1, adcBuffer, 5);
@@ -68,9 +71,6 @@ void VexUF_Init(void) {
 }
 
 void VEXUF_run(void) {
-// 	HAL_ADC_Start_DMA(&hadc1, adcBuffer, 5);
-//	HAL_Delay(20);
-//	HAL_ADC_Stop_DMA(&hadc1);
 	ADC_Scan();
 	if (timerTicked) {
 		TRIGGERS_runAll();

@@ -8,10 +8,11 @@
 
 #include "vexuf_triggers.h"
 #include "vexuf_adc_avs.h"
+#include "vexuf_pwm.h"
 
 extern TriggerConfiguration triggers[TRIGS_COUNT];
 extern uint32_t adcBuffer[5];
-
+extern PwmConfiguration pwmConfig;
 
 
 void TRIGGERS_runAll(void) {
@@ -19,6 +20,8 @@ void TRIGGERS_runAll(void) {
 		TRIGGERS_runTrig(i);
 	}
 	ACTUATORS_updateShiftReg();
+	PWM_setDutyCycle(PwmChannel1, pwmConfig.pwm1Value);
+	PWM_setDutyCycle(PwmChannel2, pwmConfig.pwm2Value);
 }
 
 void TRIGGERS_runTrig(uint8_t index) {
@@ -36,8 +39,13 @@ void TRIGGERS_runTrig(uint8_t index) {
 	if (!triggered) return;
 
 
+
 	// TODO: Act on trigger outputs!
 	ACTUATORS_trigegr(triggers[index].actuators);
+
+	if (triggers[index].pwm1 != 0xFFFF) pwmConfig.pwm1Value = triggers[index].pwm1;
+	if (triggers[index].pwm2 != 0xFFFF) pwmConfig.pwm2Value = triggers[index].pwm2;
+
 
 }
 

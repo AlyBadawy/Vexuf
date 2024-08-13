@@ -27,6 +27,8 @@ typedef enum {
     ACT_PIN_A8 = 7
 } ActuatorPin;
 
+//disabled, enabled on, enabled off,
+
 typedef struct {
 	uint16_t act1:2;
 	uint16_t act2:2;

@@ -83,14 +83,14 @@ void ADC_Scan() {
 void ADC_Output(void) {
 	printf("\r\n");
 	printf("Testing ADC functionality...\r\n");
-	printf("  VREF: %i - %0.3fV\r\n", adcBuffer[0], vref);
-	printf("  Temperature CPU Raw: %i\r\n", adcBuffer[1]);
+	printf("  VREF: %lu - %0.3fV\r\n", adcBuffer[0], vref);
+	printf("  Temperature CPU Raw: %lu\r\n", adcBuffer[1]);
 	printf("  Temperature CPU C: %0.2f\r\n", cpuTempC);
 	printf("  Temperature CPU F: %0.2f\r\n", cToF(cpuTempC));
-	printf("  Av1 Raw: %i\r\n", adcBuffer[2]);
+	printf("  Av1 Raw: %lu\r\n", adcBuffer[2]);
 	printf("  Av1 Volt: %0.3fV\r\n", ADC_rawToVoltage(adcBuffer[2]));
-	printf("  Av2 Raw: %i\r\n", adcBuffer[3]);
+	printf("  Av2 Raw: %lu\r\n", adcBuffer[3]);
 	printf("  Av2 Volt: %0.3fV\r\n", ADC_rawToVoltage(adcBuffer[3]));
-	printf("  Av3 Raw: %i\r\n", adcBuffer[4]);
+	printf("  Av3 Raw: %lu\r\n", adcBuffer[4]);
 	printf("  Av3 Volt: %0.3fV\r\n", ADC_rawToVoltage(adcBuffer[4]));
 }

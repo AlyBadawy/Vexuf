@@ -125,6 +125,8 @@ void Error_Handler(void);
 #define SDIO_DET_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
+#define LCD_pwm_Pin GPIO_PIN_5
+#define LCD_pwm_GPIO_Port GPIOB
 #define Servo2Pwm_Pin GPIO_PIN_8
 #define Servo2Pwm_GPIO_Port GPIOB
 #define Servo1PWM_Pin GPIO_PIN_9
