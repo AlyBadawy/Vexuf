@@ -30,14 +30,14 @@ typedef enum {
 //disabled, enabled on, enabled off,
 
 typedef struct {
-	uint16_t act1:2;
-	uint16_t act2:2;
-	uint16_t act3:2;
-	uint16_t act4:2;
-	uint16_t act5:2;
-	uint16_t act6:2;
-	uint16_t act7:2;
-	uint16_t act8:2;
+	uint16_t act1: 2;
+	uint16_t act2: 2;
+	uint16_t act3: 2;
+	uint16_t act4: 2;
+	uint16_t act5: 2;
+	uint16_t act6: 2;
+	uint16_t act7: 2;
+	uint16_t act8: 2;
 } ActuatorsValues;
 
 // Function prototypes

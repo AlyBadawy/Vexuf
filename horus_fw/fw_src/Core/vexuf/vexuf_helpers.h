@@ -47,20 +47,7 @@ typedef struct {
     I2CType i2cType;  // Use the enum type for lcdType
 } I2CConfiguration;
 
-typedef struct {
-	uint16_t buzzer_enabled: 1;					// 1 bit
-	uint16_t buzzer_1s_enabled: 1;				// 1 bit
-	uint16_t buzzer_hold_on_error: 1;			// 1 bit
-	uint16_t global_indeicator_enabled: 1;		// 1 bit
-	uint16_t status_indicator_enabled: 1;		// 1 bit
-	uint16_t sd_card_indicator_enabled: 1;		// 1 bit
-	uint16_t error_on_no_sd:1;					// 1 bit
-	uint16_t log_info_to_sd:1;			 		// 1 bit
-	uint16_t log_warn_to_sd:1;					// 1 bit
-	uint16_t log_error_to_sd:1;					// 1 bit
-	uint16_t reserved:6;						// 6 bit
 
-} OutputConfiguration;
 
 
 

@@ -11,6 +11,7 @@
 #include "vexuf.h"
 #include "vexuf_real_time.h"
 #include "vexuf_actuators.h"
+#include "vexuf_output.h"
 
 #define  TRIGS_COUNT		25
 
@@ -48,15 +49,15 @@ typedef struct {
     uint16_t fromValue;                   		// 16 bits
     uint16_t toValue;                   		// 16 bits
     ActuatorsValues actuators;
-    AlarmTrigOutputConfiguration output;
+    AlarmOrTrigOutput output;
     uint16_t pwm1;                  			// 16 bits, 0xffff = no change
     uint16_t pwm2;                  			// 16 bits, 0xffff = no change
-    uint16_t tnc1Enabled;
-	uint16_t tnc1Message;
-	uint16_t tnc1Path;
-	uint16_t tnc2Enabled;
-	uint16_t tnc2Message;
-	uint16_t tnc2Path;
+    uint16_t tnc1Enabled  : 1;
+	uint16_t tnc1Message  : 4;
+	uint16_t tnc1Path     : 3;
+	uint16_t tnc2Enabled  : 1;
+	uint16_t tnc2Message  : 4;
+	uint16_t tnc2Path     : 3;
 } TriggerConfiguration;
 
 

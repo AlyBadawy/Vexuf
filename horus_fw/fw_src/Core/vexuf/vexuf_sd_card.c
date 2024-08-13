@@ -10,6 +10,7 @@
 #include "vexuf_helpers.h"
 #include "vexuf_indicators.h"
 #include "vexuf_timers.h"
+#include "vexuf_output.h"
 
 extern OutputConfiguration outputConfig;
 

@@ -13,6 +13,7 @@
 #include "vexuf_triggers.h"
 #include "vexuf_real_time.h"
 #include "vexuf_pwm.h"
+#include "vexuf_output.h"
 
 extern char serialNumber[SERIAL_NUMBER_LENGTH];
 extern uint32_t registrationNumber;
@@ -268,7 +269,7 @@ void CONFIG_LoadAlarm(uint8_t index) {
 
 
 	uint16_t alarmOutputValues = EEPROM_Read(EEPROM_ALARM_OUTPUT_ADDRESS + (EEPROM_ALARM_SHIFT * index));
-	AlarmTrigOutputConfiguration alarmOutputConfig;
+	AlarmOrTrigOutput alarmOutputConfig;
 	memcpy(&alarmOutputConfig, &alarmOutputValues, sizeof(alarmOutputConfig));
 	alarmConfig[index].output.buzz = alarmOutputConfig.buzz;
 	alarmConfig[index].output.info = alarmOutputConfig.info;
@@ -352,7 +353,7 @@ void CONFIG_LoadTrigConfiguration(uint8_t index) {
 	triggers[index].actuators.act8 = trigActsConfig.act8;
 
 	uint16_t trigOutputValues = EEPROM_Read(EEPROM_TRIG_OUTPUT_ADDRESS + (EEPROM_TRIG_SHIFT * index));
-	AlarmTrigOutputConfiguration trigOutputConfig;
+	AlarmOrTrigOutput trigOutputConfig;
 	memcpy(&trigOutputConfig, &trigOutputValues, sizeof(trigOutputConfig));
 	triggers[index].output.buzz = trigOutputConfig.buzz;
 	triggers[index].output.info = trigOutputConfig.info;

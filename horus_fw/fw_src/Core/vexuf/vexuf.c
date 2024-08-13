@@ -15,6 +15,7 @@
 #include "vexuf_adc_avs.h"
 #include "vexuf_triggers.h"
 #include "vexuf_pwm.h"
+#include "vexuf_output.h"
 
 
 
@@ -66,11 +67,7 @@ void VexUF_Init(void) {
 	HAL_Delay(20);
 	TIMERS_Start();
 
-	if (outputConfig.buzzer_1s_enabled) {
-		Indicators_setStatus(IndBuzzer, IndON);
-		HAL_Delay(1000);
-		Indicators_setStatus(IndBuzzer, IndOFF);
-	}
+	OUTPUT_BuzzOnStartUp();
 	Indicators_setStatus(IndWarn, IndOFF);
 }
 

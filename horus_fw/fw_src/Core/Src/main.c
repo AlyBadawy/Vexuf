@@ -36,6 +36,7 @@
 
 #include "../vexuf/vexuf.h"
 #include "../vexuf/vexuf_timers.h"
+#include "../vexuf/vexuf_output.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -240,6 +241,7 @@ void Error_Handler(void)
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
+  OUTPUT_buzzOnError();
   while (1)
   {
   }
