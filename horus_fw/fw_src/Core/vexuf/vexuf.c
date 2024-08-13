@@ -66,7 +66,11 @@ void VexUF_Init(void) {
 	HAL_Delay(20);
 	TIMERS_Start();
 
-
+	if (outputConfig.buzzer_1s_enabled) {
+		Indicators_setStatus(IndBuzzer, IndON);
+		HAL_Delay(1000);
+		Indicators_setStatus(IndBuzzer, IndOFF);
+	}
 	Indicators_setStatus(IndWarn, IndOFF);
 }
 
