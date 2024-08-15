@@ -1,3 +1,4 @@
+
 # VexUF
 
 Welcome to the VexUF project repository. This repository contains information about various VexUF devices, each named after ancient Egyptian gods. Currently, that includes the "Horus" and "Seth" devices. Each device has its own folder and README file with specific details.
@@ -19,6 +20,8 @@ The VexUF series is a collection of versatile devices designed for a variety of 
 ## Devices
 
 ### Horus
+<img src="https://github.com/user-attachments/assets/47a59025-102a-46c4-bdac-d45394d3b694" width="400" align="right" />
+
 
 **Status: Active**
 
