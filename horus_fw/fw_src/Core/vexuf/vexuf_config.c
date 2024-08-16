@@ -14,6 +14,7 @@
 #include "vexuf_real_time.h"
 #include "vexuf_pwm.h"
 #include "vexuf_output.h"
+#include "vexuf_timers.h"
 
 extern char serialNumber[SERIAL_NUMBER_LENGTH];
 extern uint32_t registrationNumber;
@@ -50,14 +51,14 @@ void CONFIG_SetIsConfigured(void) {
 	isConfigured = true;
 }
 void CONFIG_HandleNoConfig(void) {
-	Indicators_setStatus(IndWarn, IndOFF);
+	IND_setStatus(IndWarn, IndOFF);
 	OUTPUT_buzzOnError();
+	TIMERS_Stop();
+	PWM_deinit();
 	while (!isConfigured) {
-		Indicators_setStatus(IndError, IndOFF);
-		Indicators_setStatus(IndWarn, IndON);
+		IND_setStatus(IndError, IndON);
 		HAL_Delay(300);
-		Indicators_setStatus(IndError, IndON);
-		Indicators_setStatus(IndWarn, IndOFF);
+		IND_setStatus(IndWarn, IndON);
 		HAL_Delay(300);
 	}
 }
@@ -72,12 +73,13 @@ void CONFIG_ReadSerialNumber(char serialNumberBuffer[25]){
 	serialNumberBuffer[24] = buffer[12] & 0xFF;
 }
 void CONFIG_WriteSerialNumber(void) {
-	uint16_t buffer[EEPROM_SERIAL_NUMBER_LENGTH] = {0};
-	for (int i = 0; i < 12; i++) {
-		buffer[i] = (serialNumber[2 * i] & 0xFF) | ((serialNumber[2 * i + 1] & 0xFF) << 8);
-	}
-	buffer[12] = serialNumber[24] & 0xFF;
-	EEPROM_WriteMultipleWords(EEPROM_SERIAL_NUMBER_ADDRESS, buffer, EEPROM_SERIAL_NUMBER_LENGTH);
+    uint16_t buffer[EEPROM_SERIAL_NUMBER_LENGTH] = {0};
+
+    for (int i = 0; i < EEPROM_SERIAL_NUMBER_LENGTH; i++) {
+        buffer[i] = (serialNumber[2 * i] & 0xFF) | ((serialNumber[2 * i + 1] & 0xFF) << 8);
+    }
+
+    EEPROM_WriteMultipleWords(EEPROM_SERIAL_NUMBER_ADDRESS, buffer, EEPROM_SERIAL_NUMBER_LENGTH);
 }
 void EEPROM_LoadRegNumber(void) {
     uint16_t buffer[2];
@@ -92,20 +94,21 @@ void EEPROM_SetRegNumber(uint32_t regNumber) {
     EEPROM_WriteMultipleWords(EEPROM_REGISTERATION_NUMBER_ADDRESS, buffer, 2);
 }
 void CONFIG_LoadCallSign(void) {
-	uint16_t buffer[5] = {0};
+	uint16_t buffer[EEPROM_CALLSIGN_LENGTH] = {0};
 	EEPROM_ReadMultipleWords(EEPROM_CALLSIGN_ADDRESS, buffer, EEPROM_CALLSIGN_LENGTH);
 	for (int i = 0; i < EEPROM_CALLSIGN_LENGTH; i++) {
 		callsign[2 * i] = buffer[i] & 0xFF;
 		callsign[2 * i + 1] = (buffer[i] >> 8) & 0xFF;
 	}
 }
-void CONFIG_SetCallSign(char newCallSign[EEPROM_CALLSIGN_LENGTH]) {
-	strcpy(callsign, newCallSign);
-	uint16_t buffer[EEPROM_CALLSIGN_LENGTH] = {0};
-	for (int i = 0; i < EEPROM_CALLSIGN_LENGTH; i++) {
-		buffer[i] = (callsign[2 * i] & 0xFF) | ((callsign[2 * i + 1] & 0xFF) << 8);
-	}
-	EEPROM_WriteMultipleWords(EEPROM_CALLSIGN_ADDRESS, buffer, EEPROM_CALLSIGN_LENGTH);
+
+void CONFIG_SetCallSign(char newCallSign[CALLSIGN_LENGTH]) {
+    strncpy(callsign, newCallSign, CALLSIGN_LENGTH);
+    uint16_t buffer[EEPROM_CALLSIGN_LENGTH] = {0};
+    for (int i = 0; i < EEPROM_CALLSIGN_LENGTH; i++) {
+        buffer[i] = (callsign[2 * i] & 0xFF) | ((callsign[2 * i + 1] & 0xFF) << 8);
+    }
+    EEPROM_WriteMultipleWords(EEPROM_CALLSIGN_ADDRESS, buffer, EEPROM_CALLSIGN_LENGTH);
 }
 
 void CONFIG_LoadSerialInterface(void) {

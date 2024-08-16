@@ -24,9 +24,11 @@ typedef struct {
 
 
 void PWM_init(void);
-
+void PWM_enable(PwmChannel channel);
 void PWM_Start(PwmChannel channel);
-void PWM_Stop(PwmChannel channel);
 void PWM_setDutyCycle(PwmChannel channel, uint16_t dutyCycle);
+void PWM_Stop(PwmChannel channel);
+void PWM_diable(PwmChannel channel);
+void PWM_deinit(void);
 
 #endif /* VEXUF_VEXUF_PWM_H_ */

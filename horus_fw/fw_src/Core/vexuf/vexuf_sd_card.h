@@ -16,6 +16,7 @@
 FRESULT SDCard_MountFS();
 float SDCard_GetTotalSize(void);
 float SDCard_GetFreeSize(void);
+void SDCard_checkCard(void);
 
 
 void SDCard_HandleError(void);

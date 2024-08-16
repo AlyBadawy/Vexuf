@@ -73,21 +73,6 @@ int _write(int file, char *ptr, int len) {
 	return len;
 }
 
-
-// This is used by printf(). We are redirecting that to ITM for debugging.
-
-
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-//    if (htim->Instance == TIM4) { // every 100ms (10Hz);
-//    	Indicators_toggleIndWithStatus(FAST);
-//    } else if (htim->Instance == TIM9) { // every 1s (1Hz)
-//    	Indicators_toggleIndWithStatus(SLOW);
-//    } else if (htim->Instance == TIM5) {
-//
-//    }
-//}
-
-
 /* USER CODE END 0 */
 
 /**
@@ -132,7 +117,9 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_TIM10_Init();
   MX_TIM11_Init();
-  /* USER CODE BEGIN 2 *
+  /* USER CODE BEGIN 2 */
+
+
 
   VexUF_Init();
 

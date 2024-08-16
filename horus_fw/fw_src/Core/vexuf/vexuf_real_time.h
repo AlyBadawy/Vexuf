@@ -11,7 +11,6 @@
 #include "vexuf.h"
 #include "vexuf_actuators.h"
 #include "vexuf_output.h"
-#include "vexuf_output.h"
 
 
 typedef struct {

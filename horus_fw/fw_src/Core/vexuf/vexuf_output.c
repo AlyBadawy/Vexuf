@@ -11,15 +11,18 @@
 extern OutputConfiguration outputConfig;
 
 void OUTPUT_buzzOnError(void) {
-	if (outputConfig.buzzer_hold_on_error) {
-		Indicators_setStatus(IndBuzzer, IndON);
-	}
+//	if (outputConfig.buzzer_hold_on_error) {
+//		IND_setStatus(IndBuzzer, IndON);
+//	}
 }
 
 void OUTPUT_BuzzOnStartUp(void) {
 	if (outputConfig.buzzer_1s_enabled) {
-		Indicators_setStatus(IndBuzzer, IndON);
-		HAL_Delay(1000);
-		Indicators_setStatus(IndBuzzer, IndOFF);
+		for(uint8_t i = 0; i <3; i++) {
+			IND_setStatus(IndBuzzer, IndON);
+			HAL_Delay(20);
+			IND_setStatus(IndBuzzer, IndOFF);
+			HAL_Delay(40);
+		}
 	}
 }
