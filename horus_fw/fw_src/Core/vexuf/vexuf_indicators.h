@@ -15,17 +15,17 @@ typedef enum {
     IndSLOW = 0b01,
     IndFAST = 0b10,
     IndON = 0b11
-} IndicatorStatus;
+} IndStatusOption;
 
 typedef enum {
     IndError = 0,
-	IndWarn = 1,
-	IndInfo = 2,
-	IndSdio = 3,
-	IndBuzzer = 4,
-	IndAv1 = 5,
-	IndAv2 = 6,
-	IndAv3 = 7
+    IndWarn = 1,
+    IndInfo = 2,
+    IndAv1 = 3,
+	IndAv2 = 4,
+	IndAv3 = 5,
+	IndBuzzer = 6,
+	IndSdio = 7
 } Indicator;
 
 typedef struct {
@@ -33,11 +33,20 @@ typedef struct {
     uint16_t pin;
 } IndicatorPin;
 
-void Indicators_init(void);
-void Indicators_setStatus(Indicator ind, IndicatorStatus status);
-void Indicators_clearAllStatuses(void);
-void Indicators_toggleIndWithStatus(IndicatorStatus status);
-IndicatorStatus Indicators_getStatus(Indicator ind);
+typedef struct {
+	IndStatusOption indErrorStatus: 2;
+	IndStatusOption indWarnStatus: 2;
+	IndStatusOption indInfoStatus: 2;
+	IndStatusOption indAv1Status: 2;
+	IndStatusOption indAv2Status: 2;
+	IndStatusOption indAv3Status: 2;
+	IndStatusOption indBuzzerStatus: 2;
+	IndStatusOption indSdioStatus: 2;
+} IndStatus;
+
+IndStatusOption IND_getCurrentStatus(Indicator ind);
+void IND_setStatus(Indicator ind, IndStatusOption option);
+void IND_toggleIndWithStatusOption(IndStatusOption option);
 
 
 #endif /* INC_VEXUF_INDICATORS_H_ */

@@ -64,18 +64,18 @@ void ADC_Scan() {
 		default:
 			break;
 		}
-		if (avSensors[i].enabled && avSensors[i].indicatorEnabled) {
+		if (avSensors[i].enabled && avSensors[i].indicatorEnabled == 1) {
 			if (avSensors[i].statusSlow && (adcBuffer[2 + i] >= avSensors[i].minSlow && adcBuffer[2 + i] <= avSensors[i].maxSlow)) {
-				Indicators_setStatus(ind, IndSLOW);
+				IND_setStatus(ind, IndSLOW);
 			} else if (avSensors[i].statusFast && (adcBuffer[2 + i] >= avSensors[i].minFast && adcBuffer[2 + i] <= avSensors[i].maxFast)) {
-				Indicators_setStatus(ind, IndFAST);
+				IND_setStatus(ind, IndFAST);
 			} else if (avSensors[i].statusOn && (adcBuffer[2 + i] >= avSensors[i].minOn && adcBuffer[2 + i] <= avSensors[i].maxOn)) {
-				Indicators_setStatus(ind, IndON);
+				IND_setStatus(ind, IndON);
 			} else {
-				Indicators_setStatus(ind, IndOFF);
+				IND_setStatus(ind, IndOFF);
 			}
 		} else {
-			Indicators_setStatus(ind, IndOFF);
+			IND_setStatus(ind, IndOFF);
 		}
 	}
 }

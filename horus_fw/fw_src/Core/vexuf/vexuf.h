@@ -10,7 +10,6 @@
 
 #include "../inc/main.h"
 
-
 void VexUF_Init(void);
 void VEXUF_run(void);
 

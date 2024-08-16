@@ -11,14 +11,16 @@
 #include "vexuf_indicators.h"
 #include "vexuf_timers.h"
 #include "vexuf_output.h"
+#include "vexuf_pwm.h"
 
 extern OutputConfiguration outputConfig;
+extern VexufStatus vexuf_status;
 
 FATFS FatFs;
 FIL Fil;
 FRESULT FR_Status;
 FATFS *FS_Ptr;
-UINT RWC, WWC; // Read/Write Word Counter
+UINT RWC, WWC;
 DWORD FreeClusters;
 
 
@@ -29,19 +31,33 @@ DWORD FreeClusters;
 
 void SDCard_HandleError(void) {
 	if (!outputConfig.error_on_no_sd) return;
-	OUTPUT_buzzOnError();
-	Indicators_setStatus(IndWarn, IndOFF);
 
+	FR_Status = FR_NOT_READY;
+
+	OUTPUT_buzzOnError();
 	TIMERS_Stop();
+	PWM_deinit();
 
 	while (FR_Status != FR_OK) {
-		Indicators_setStatus(IndError, IndOFF);
-		Indicators_setStatus(IndSdio, IndON);
+		IND_setStatus(IndSdio, IndON);
+		IND_setStatus(IndError, IndOFF);
 		HAL_Delay(300);
-		Indicators_setStatus(IndError, IndON);
-		Indicators_setStatus(IndSdio, IndOFF);
+		IND_setStatus(IndError, IndON);
+		IND_setStatus(IndSdio, IndOFF);
 		HAL_Delay(300);
+		if (vexuf_status.sd_card_present && HAL_GPIO_ReadPin(SDIO_DET_GPIO_Port, SDIO_DET_Pin) == GPIO_PIN_SET) {
+			vexuf_status.sd_card_present = 0;
+		}
+		if (!vexuf_status.sd_card_present && HAL_GPIO_ReadPin(SDIO_DET_GPIO_Port, SDIO_DET_Pin) == GPIO_PIN_RESET) {
+			FR_Status = FR_OK;
+		}
 	}
+	IND_setStatus(IndError, IndOFF);
+	IND_setStatus(IndSdio, IndOFF);
+	vexuf_status.sd_card_present = 1;
+	vexuf_status.sd_card_error = 0;
+	TIMERS_Start();
+	PWM_init();
 }
 
 FRESULT SDCard_MountFS() {
@@ -82,6 +98,28 @@ float SDCard_GetFreeSize(void) {
 	free_sectors = (uint64_t)FreeClusters * FS_Ptr->csize;					// Calculate free sectors
 	free_space = free_sectors * 512;										// Convert to bytes
 	return (float)free_space / (1024 * 1024 * 1024);						// Convert to gigabytes (use float for GB to handle large values)
+}
+
+void SDCard_checkCard(void) {
+    GPIO_PinState sdio_det = HAL_GPIO_ReadPin(SDIO_DET_GPIO_Port, SDIO_DET_Pin);
+
+    if (vexuf_status.sd_card_present && sdio_det == GPIO_PIN_RESET) {
+    	// The card is marked to be present and is still present.
+    	return;
+    } else if (vexuf_status.sd_card_present && sdio_det == GPIO_PIN_SET) {
+    	// The card is marked present, but it's no longer present
+    	vexuf_status.sd_card_present = false;
+    	f_mount(NULL, (TCHAR const*)"", 1); // Unmount the filesystem
+    } else if (!vexuf_status.sd_card_present && sdio_det == GPIO_PIN_RESET) {
+    	// The card is marked not to be present, but nwo it is.
+    	// Attempt to mount the SD card
+    	if (SDCard_MountFS() == FR_OK) {
+    		vexuf_status.sd_card_present = true;
+    		vexuf_status.sd_card_error = false;
+    		return;
+    	}
+    }
+    vexuf_status.sd_card_error = true;
 }
 
 

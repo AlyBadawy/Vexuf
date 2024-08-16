@@ -86,6 +86,7 @@ uint16_t EEPROM_Read(uint16_t address) {
 	temp = SPI_TransmitReceive(0x00);
     data |= (temp >> 7);
     HAL_Delay(1); // Ensure some delay as per datasheet
+    EEPROM_CS_LOW();
     return data;
 }
 

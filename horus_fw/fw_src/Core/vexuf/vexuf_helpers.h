@@ -10,12 +10,11 @@
 
 #include "vexuf.h"
 #include "vexuf_actuators.h"
+#include "vexuf_indicators.h"
 #include "vexuf_real_time.h"
 
-#define SERIAL_NUMBER_LENGTH		25
-#define CALLSIGN_LENGTH				10
-
-
+#define SERIAL_NUMBER_LENGTH		24
+#define CALLSIGN_LENGTH				20
 
 
 typedef enum {Baud300, Baud600, Baud1200, Baud4800, Baud9600, Baud19200, Baud57600, Baud115200} BaudRate;
@@ -49,7 +48,15 @@ typedef struct {
 
 
 
-
+typedef struct {
+	uint16_t timer_1hz_ticked: 1;
+	uint16_t timer_10hz_ticked: 1;
+	uint16_t timer_0d1hz_ticked: 1;
+	uint16_t no_config_error: 1;
+	uint16_t sd_card_error: 1;
+	uint16_t sd_card_present: 1;
+	uint16_t reserved: 10;
+} VexufStatus;
 
 
 

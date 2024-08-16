@@ -39,19 +39,23 @@ PwmConfiguration pwmConfig;
 TriggerConfiguration triggers[TRIGS_COUNT];
 AvSensor avSensors[NUMBER_OF_AVS];
 
-bool timerTicked = false;
+VexufStatus vexuf_status;
+IndStatus ind_status;
+
 
 
 void VexUF_Init(void) {
-	Indicators_setStatus(IndWarn, IndON);
+
+	IND_setStatus(IndWarn, IndON);
 
 	VexUF_GenerateSerialNumber();
 
-	// Check if the EEPROM has configuration, otherwise halt!
-	if (!CONFIG_IsConfigured()) CONFIG_HandleNoConfig();
+
+	//	 Check if the EEPROM has configuration, otherwise halt!
+	if (!CONFIG_IsConfigured()) {
+		CONFIG_HandleNoConfig();
+	}
 	CONFIG_WriteSerialNumber();
-	// Mount the SD Card, and handle the error if fails
-	if (SDCard_MountFS() != FR_OK) SDCard_HandleError();
 
 	CONFIG_LoadSettingsFromEEPROM();
 
@@ -61,23 +65,24 @@ void VexUF_Init(void) {
 
 	ACTUATORS_Test(); // TODO: remove before release
 
-
-
-
  	HAL_ADC_Start_DMA(&hadc1, adcBuffer, 5);
 	HAL_Delay(20);
 	TIMERS_Start();
 
 	OUTPUT_BuzzOnStartUp();
-	Indicators_setStatus(IndWarn, IndOFF);
+	IND_setStatus(IndWarn, IndOFF);
 
 }
 
 void VEXUF_run(void) {
 	ADC_Scan();
-	if (timerTicked) {
+	SDCard_checkCard();
+
+	if (vexuf_status.sd_card_error && outputConfig.error_on_no_sd) SDCard_HandleError();
+
+	if (vexuf_status.timer_0d1hz_ticked == 1) {
 		TRIGGERS_runAll();
-		timerTicked = false;
+		vexuf_status.timer_0d1hz_ticked = 0;
 	}
 }
 
