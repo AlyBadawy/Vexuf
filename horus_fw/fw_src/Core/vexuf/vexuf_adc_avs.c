@@ -64,16 +64,20 @@ void ADC_Scan() {
 		default:
 			break;
 		}
-		if (avSensors[i].enabled && avSensors[i].indicatorEnabled == 1) {
-			if (avSensors[i].statusSlow && (adcBuffer[2 + i] >= avSensors[i].minSlow && adcBuffer[2 + i] <= avSensors[i].maxSlow)) {
-				IND_setStatus(ind, IndSLOW);
-			} else if (avSensors[i].statusFast && (adcBuffer[2 + i] >= avSensors[i].minFast && adcBuffer[2 + i] <= avSensors[i].maxFast)) {
-				IND_setStatus(ind, IndFAST);
-			} else if (avSensors[i].statusOn && (adcBuffer[2 + i] >= avSensors[i].minOn && adcBuffer[2 + i] <= avSensors[i].maxOn)) {
-				IND_setStatus(ind, IndON);
-			} else {
-				IND_setStatus(ind, IndOFF);
+		if (avSensors[i].enabled) {
+			if (avSensors[i].indicatorEnabled == 1) {
+				if (avSensors[i].statusSlow && (adcBuffer[2 + i] >= avSensors[i].minSlow && adcBuffer[2 + i] <= avSensors[i].maxSlow)) {
+					IND_setStatus(ind, IndSLOW);
+				} else if (avSensors[i].statusFast && (adcBuffer[2 + i] >= avSensors[i].minFast && adcBuffer[2 + i] <= avSensors[i].maxFast)) {
+					IND_setStatus(ind, IndFAST);
+				} else if (avSensors[i].statusOn && (adcBuffer[2 + i] >= avSensors[i].minOn && adcBuffer[2 + i] <= avSensors[i].maxOn)) {
+					IND_setStatus(ind, IndON);
+				} else {
+					IND_setStatus(ind, IndOFF);
+				}
 			}
+			// TODO: Display output on LCD
+			// TODO: Log the output to Logger
 		} else {
 			IND_setStatus(ind, IndOFF);
 		}
