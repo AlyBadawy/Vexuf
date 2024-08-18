@@ -16,6 +16,8 @@
 #include "vexuf_triggers.h"
 #include "vexuf_pwm.h"
 #include "vexuf_output.h"
+#include "vexuf_i2c_checker.h"
+#include "vexuf_i2c_hd44780.h"
 
 
 
@@ -46,6 +48,15 @@ IndStatus ind_status;
 
 void VexUF_Init(void) {
 
+	I2C_ScanTest();
+
+	// TODO: Move this to the LCD driver after creation;
+	// Also, TODO: make the I2C address customizable.
+	HD44780_Init(2);
+	HD44780_Clear();
+	HD44780_SetCursor(0,0);
+
+
 	IND_setStatus(IndWarn, IndON);
 
 	VexUF_GenerateSerialNumber();
@@ -63,7 +74,7 @@ void VexUF_Init(void) {
 
 	HAL_Delay(500);
 
-	ACTUATORS_Test(); // TODO: remove before release
+ 	ACTUATORS_Test(); // TODO: remove before release
 
  	HAL_ADC_Start_DMA(&hadc1, adcBuffer, 5);
 	HAL_Delay(20);
