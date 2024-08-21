@@ -24,6 +24,10 @@
 extern ADC_HandleTypeDef hadc1;
 extern uint32_t adcBuffer[5];
 
+extern UART_HandleTypeDef huart1;
+
+extern UART_HandleTypeDef huart6;
+
 
 
 char serialNumber[SERIAL_NUMBER_LENGTH];
@@ -47,7 +51,6 @@ IndStatus ind_status;
 
 
 void VexUF_Init(void) {
-
 	I2C_ScanTest();
 
 	// TODO: Move this to the LCD driver after creation;
@@ -83,6 +86,7 @@ void VexUF_Init(void) {
 	OUTPUT_BuzzOnStartUp();
 	IND_setStatus(IndWarn, IndOFF);
 
+//	HD44780_PrintStr("OK!");
 }
 
 void VEXUF_run(void) {

@@ -9,6 +9,9 @@
 #define VEXUF_VEXUF_I2C_HD44780_H_
 
 #include "vexuf.h"
+
+#define DEVICE_ADDR (0x27 << 1)
+
 /* Command */
 #define LCD_CLEARDISPLAY 0x01
 #define LCD_RETURNHOME 0x02
@@ -59,9 +62,6 @@
 
 /* Register Select Bit */
 #define RS 0x01
-
-/* Device I2C Address */
-#define DEVICE_ADDR     (0x27 << 1)
 
 void HD44780_Init(uint8_t rows);
 void HD44780_Clear();
