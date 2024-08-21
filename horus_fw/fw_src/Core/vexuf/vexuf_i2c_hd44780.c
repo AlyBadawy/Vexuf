@@ -25,27 +25,14 @@ static void PulseEnable(uint8_t);
 static void DelayInit(void);
 static void DelayUS(uint32_t);
 
-uint8_t special1[8] = {
-        0b00000,
-        0b11001,
-        0b11011,
-        0b00110,
-        0b01100,
-        0b11011,
-        0b10011,
-        0b00000
-};
+uint8_t one[8] = {0x1f, 0x1b, 0x13, 0x1b, 0x1b, 0x1b, 0x11, 0x1f};
+uint8_t two[8] = {0x1f, 0x1b, 0x15, 0x1d, 0x1b, 0x17, 0x11, 0x1f};
+uint8_t three[8] = {0x1f, 0x11, 0x1d, 0x11, 0x1d, 0x1d, 0x11, 0x1f};
 
-uint8_t special2[8] = {
-        0b11000,
-        0b11000,
-        0b00110,
-        0b01001,
-        0b01000,
-        0b01001,
-        0b00110,
-        0b00000
-};
+uint8_t degree[8] = { 0x08, 0x14, 0x08, 0x06, 0x09, 0x08, 0x09, 0x06 };
+uint8_t bell[8] = {0x04, 0x0e, 0x0e, 0x0e, 0x1f, 0x00, 0x04, 0x00};
+
+
 
 void HD44780_Init(uint8_t rows)
 {
@@ -96,8 +83,11 @@ void HD44780_Init(uint8_t rows)
   SendCommand(LCD_ENTRYMODESET | dpMode);
   DelayUS(4500);
 
-  HD44780_CreateSpecialChar(0, special1);
-  HD44780_CreateSpecialChar(1, special2);
+  HD44780_CreateSpecialChar(0, one);
+  HD44780_CreateSpecialChar(1, two);
+  HD44780_CreateSpecialChar(2, three);
+  HD44780_CreateSpecialChar(3, bell);
+  HD44780_CreateSpecialChar(4, degree);
 
   HD44780_Home();
 }
@@ -114,7 +104,7 @@ void HD44780_Home()
   DelayUS(2000);
 }
 
-void HD44780_SetCursor(uint8_t col, uint8_t row)
+void HD44780_SetCursor(uint8_t row, uint8_t col)
 {
   int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
   if (row >= dpRows)
