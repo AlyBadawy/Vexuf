@@ -17,23 +17,13 @@
 #define CALLSIGN_LENGTH				20
 
 
-typedef enum {Baud300, Baud600, Baud1200, Baud4800, Baud9600, Baud19200, Baud57600, Baud115200} BaudRate;
+
 typedef enum {NoLCD = 0, LCD2004 = 1, LCD1602 = 2} LcdType;
 typedef enum {NoI2C = 0, AHT20 = 1, AHT21 = 2} I2CType;
 typedef enum {NoSpi = 0, BLUETOOTH} SpiType;
 
 
 
-typedef struct {
-    uint16_t ttl_enabled : 1;                	// 1 bit
-    BaudRate ttl_baud : 4;                		// 4 bit
-    uint16_t ttl_led_enabled : 1;               // 1 bit
-    uint16_t reserved1 : 2;                		// (padding to make 16 bits total)
-    uint16_t tnc_enabled : 1;                	// 1 bit
-    BaudRate tnc__baud : 4;                		// 4 bit
-    uint16_t reserved2 : 3;                		// (padding to make 16 bits total)
-
-} SerialConfiguration;
 
 typedef struct {
     uint16_t lcdAdd;
@@ -55,7 +45,10 @@ typedef struct {
 	uint16_t no_config_error: 1;
 	uint16_t sd_card_error: 1;
 	uint16_t sd_card_present: 1;
-	uint16_t reserved: 10;
+	uint16_t ttlBuffered: 1;
+	uint16_t tncBuffered: 1;
+	uint16_t cdcBuffered: 1;
+	uint16_t reserved: 7;
 } VexufStatus;
 
 

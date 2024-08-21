@@ -35,7 +35,7 @@ void TRIGGERS_runTrig(uint8_t index) {
 	toValue = triggers[index].toValue;
 
 	bool triggered = TRIGGERS_isTriggered(comparison, test, fromValue, toValue);
-	printf("Trigger #%i returned: %s\r\n", index, (triggered ? "True" : "False"));
+//	printf("Trigger #%i returned: %s\r\n", index, (triggered ? "True" : "False"));
 	if (!triggered) return;
 
 

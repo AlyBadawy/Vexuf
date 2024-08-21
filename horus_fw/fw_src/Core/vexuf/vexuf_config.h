@@ -12,6 +12,7 @@
 #include "vexuf_indicators.h"
 #include "vexuf_eeprom.h"
 #include "vexuf_adc_avs.h"
+#include "vexuf_helpers.h"
 
 #define  CONFIG_FLAG 					0x3E3E
 #define  CONFIG_VERSION   				1
@@ -26,6 +27,9 @@ void CONFIG_HandleNoConfig(void);
 void CONFIG_WriteSerialNumber(void);
 
 void CONFIG_LoadSettingsFromEEPROM(void);
+
+void CONFIG_LoadCallSign(void);
+void CONFIG_SetCallSign(const char newCallSign[CALLSIGN_LENGTH]);
 
 
 void CONFIG_SetAvSensor(uint8_t index, AvSensor *sensor);

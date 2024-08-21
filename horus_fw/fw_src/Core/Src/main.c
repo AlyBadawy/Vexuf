@@ -114,12 +114,10 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART6_UART_Init();
   MX_TIM3_Init();
-//  MX_USB_DEVICE_Init();
+  MX_USB_DEVICE_Init();
   MX_TIM10_Init();
   MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
-
-
 
   VexUF_Init();
 
@@ -191,33 +189,6 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
-
-/**
-  * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM1 interrupt took place, inside
-  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
-  * a global variable "uwTick" used as application time base.
-  * @param  htim : TIM handle
-  * @retval None
-  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  /* USER CODE BEGIN Callback 0 */
-
-  /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM1) {
-    HAL_IncTick();
-  }
-  /* USER CODE BEGIN Callback 1 */
-  else if (htim->Instance == TIM4) { // every 100ms (10Hz);
-	  TIMERS_10Hz();
-  } else if (htim->Instance == TIM9) { // every 1s (1Hz)
-	  TIMERS_1Hz();
-  } else if (htim->Instance == TIM5) { // every 10 seconds (0.1Hz)
-	  TIMERS_0d1Hz();
-  }
-  /* USER CODE END Callback 1 */
-}
 
 /**
   * @brief  This function is executed in case of error occurrence.
