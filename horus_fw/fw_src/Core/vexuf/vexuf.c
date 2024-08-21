@@ -51,42 +51,13 @@ IndStatus ind_status;
 
 
 void VexUF_Init(void) {
-
-//	I2C_ScanTest();
+	I2C_ScanTest();
 
 	// TODO: Move this to the LCD driver after creation;
 	// Also, TODO: make the I2C address customizable.
-	HD44780_Init(4);
+	HD44780_Init(2);
 	HD44780_Clear();
 	HD44780_SetCursor(0,0);
-	HD44780_PrintStr("SD:ok");
-
-	HD44780_SetCursor(3,0);
-	HD44780_PrintSpecialChar(0);
-	HD44780_PrintStr("11.2");
-
-	HD44780_SetCursor(3,6);
-	HD44780_PrintSpecialChar(1);
-	HD44780_PrintStr("33.9");
-
-	HD44780_SetCursor(3,12);
-	HD44780_PrintSpecialChar(2);
-	HD44780_PrintStr("18.3");
-
-	HD44780_SetCursor(3,18);
-	HD44780_PrintSpecialChar(3);
-	HD44780_PrintStr("\x7E");
-	HD44780_SetCursor(1,19);
-	HD44780_PrintSpecialChar(4);
-
-
-
-
-
-
-
-
-	HAL_UART_Transmit(&huart1, (uint8_t*)"hi\r\n", 4, 100);
 
 
 	IND_setStatus(IndWarn, IndON);
