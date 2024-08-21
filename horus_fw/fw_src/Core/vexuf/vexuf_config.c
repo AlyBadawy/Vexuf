@@ -15,11 +15,12 @@
 #include "vexuf_pwm.h"
 #include "vexuf_output.h"
 #include "vexuf_timers.h"
+#include "vexuf_serial.h"
 
 extern char serialNumber[SERIAL_NUMBER_LENGTH];
 extern uint32_t registrationNumber;
 extern char callsign[CALLSIGN_LENGTH];
-extern SerialConfiguration serialInterface;
+extern SerialConfiguration serialConfig;
 extern SpiType spiType;
 extern LcdConfiguration lcdConfig;
 extern I2CConfiguration i2cConfig;
@@ -102,7 +103,7 @@ void CONFIG_LoadCallSign(void) {
 	}
 }
 
-void CONFIG_SetCallSign(char newCallSign[CALLSIGN_LENGTH]) {
+void CONFIG_SetCallSign(const char newCallSign[CALLSIGN_LENGTH]) {
     strncpy(callsign, newCallSign, CALLSIGN_LENGTH);
     uint16_t buffer[EEPROM_CALLSIGN_LENGTH] = {0};
     for (int i = 0; i < EEPROM_CALLSIGN_LENGTH; i++) {
@@ -111,20 +112,20 @@ void CONFIG_SetCallSign(char newCallSign[CALLSIGN_LENGTH]) {
     EEPROM_WriteMultipleWords(EEPROM_CALLSIGN_ADDRESS, buffer, EEPROM_CALLSIGN_LENGTH);
 }
 
-void CONFIG_LoadSerialInterface(void) {
+void CONFIG_LoadSerialConfig(void) {
 	uint16_t config = EEPROM_Read(EEPROM_SERIAL_INTERFACE_ADDRESS);
-	memcpy(&serialInterface, &config, sizeof(serialInterface));
+	memcpy(&serialConfig, &config, sizeof(config));
 
 }
-void CONFIG_SetSerialInterface(SerialConfiguration *newSerialInterface) {
-	serialInterface.ttl_enabled = newSerialInterface->ttl_enabled;
-	serialInterface.ttl_baud = newSerialInterface->ttl_baud;
-	serialInterface.ttl_led_enabled = newSerialInterface->ttl_led_enabled;
-	serialInterface.tnc_enabled = newSerialInterface->tnc_enabled;
-	serialInterface.tnc__baud = newSerialInterface->tnc__baud;
+void CONFIG_SetSerialConfig(SerialConfiguration *newSerialConfig) {
+	serialConfig.ttl_enabled = newSerialConfig->ttl_enabled;
+	serialConfig.ttl_baud = newSerialConfig->ttl_baud;
+	serialConfig.ttl_led_enabled = newSerialConfig->ttl_led_enabled;
+	serialConfig.tnc_enabled = newSerialConfig->tnc_enabled;
+	serialConfig.tnc__baud = newSerialConfig->tnc__baud;
 
 	uint16_t data;
-	memcpy(&data, &serialInterface, sizeof(data));
+	memcpy(&data, &serialConfig, sizeof(data));
 	EEPROM_Write(EEPROM_SERIAL_INTERFACE_ADDRESS, data);
 }
 void CONFIG_LoadLcdConfig(void) {
@@ -429,7 +430,7 @@ void CONFIG_SetTrigConfiguration(uint8_t index, TriggerConfiguration *newTrigCon
 void CONFIG_LoadSettingsFromEEPROM(void) {
 	EEPROM_LoadRegNumber();
 	CONFIG_LoadCallSign();
-	CONFIG_LoadSerialInterface();
+	CONFIG_LoadSerialConfig();
 	CONFIG_LoadI2cConfig();
 	CONFIG_LoadLcdConfig();
 	CONFIG_LoadSpiConfig();
