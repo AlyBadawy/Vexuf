@@ -51,14 +51,16 @@ IndStatus ind_status;
 
 uint8_t ttlRxData[SERIAL_BUFFER_SIZE];
 uint8_t tncRxData[SERIAL_BUFFER_SIZE];
+uint8_t cdcRxData[SERIAL_BUFFER_SIZE];
 uint16_t ttlRxIdx;
 uint16_t tncRxIdx;
+uint16_t cdcRxIdx;
 
-uint8_t cdcRxData[SERIAL_BUFFER_SIZE];
+float cpuTempC;
 
 
 void VexUF_Init(void) {
-	I2C_ScanTest();
+//	I2C_ScanTest();
 
 	// TODO: Move this to the LCD driver after creation;
 	// Also, TODO: make the I2C address customizable.
@@ -84,9 +86,9 @@ void VexUF_Init(void) {
 
 	HAL_Delay(500);
 
- 	ACTUATORS_Test(); // TODO: remove before release
+// 	ACTUATORS_Test(); // TODO: remove before release
 
- 	HAL_ADC_Start_DMA(&hadc1, adcBuffer, 5);
+
 
 
  	HAL_UARTEx_ReceiveToIdle_IT(&huart1, ttlRxData, SERIAL_BUFFER_SIZE);
@@ -107,6 +109,13 @@ void VEXUF_run(void) {
 	SDCard_checkCard();
 
 	if (vexuf_status.sd_card_error && outputConfig.error_on_no_sd) SDCard_HandleError();
+
+	if (vexuf_status.timer_1hz_ticked == 1){
+		HAL_ADC_Start_DMA(&hadc1, adcBuffer, 5);
+		HAL_Delay(20);
+		HAL_ADC_Stop_DMA(&hadc1);
+		vexuf_status.timer_1hz_ticked = 0;
+	}
 
 	if (vexuf_status.timer_0d1hz_ticked == 1) {
 		TRIGGERS_runAll();

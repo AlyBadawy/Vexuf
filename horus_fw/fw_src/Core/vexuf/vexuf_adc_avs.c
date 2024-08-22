@@ -21,7 +21,8 @@ extern AvSensor avSensors[NUMBER_OF_AVS];
  * 4: AV3 Raw Value
  */
 uint32_t adcBuffer[5];
-float vref, cpuTempC, temp_sense;
+float vref, temp_sense;
+extern float cpuTempC;
 
 void ADC_getVref(void) {
 	if (adcBuffer[0] == 0) {

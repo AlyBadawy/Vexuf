@@ -10,7 +10,7 @@
 
 #include "vexuf.h"
 
-#define SERIAL_BUFFER_SIZE		100
+#define SERIAL_BUFFER_SIZE		1024
 
 typedef enum {Baud300, Baud600, Baud1200, Baud4800, Baud9600, Baud19200, Baud57600, Baud115200} BaudRate;
 typedef enum {TtlUart, TncUart, CDC} SerialInterface;
