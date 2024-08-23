@@ -33,6 +33,7 @@ void CONFIG_SetCallSign(const char newCallSign[CALLSIGN_LENGTH]);
 
 
 void CONFIG_SetAvSensor(uint8_t index, AvSensor *sensor);
+void CONFIG_SetOutputs(OutputConfiguration *newOutputConf);
 
 
 #endif /* INC_VEXUF_CONFIG_H_ */

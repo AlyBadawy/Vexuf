@@ -25,4 +25,7 @@ typedef struct {
 
 } AlarmConfiguration;
 
+void REALTIME_GetDateTime(char *datetime);
+int REALTIME_SetDateTime(const char *datetime);
+
 #endif /* VEXUF_VEXUF_REAL_TIME_H_ */
